@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Zain Media — طلبات الموظفين{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>طلبات الموظفين</h1>
+        <p>الموافقة على طلبات الحذف والتعديل من الموظفين</p>
+    </div>
+</div>
+
+<div class="card" style="margin-bottom: 20px;">
+    <div class="flex gap-2">
+        <a href="{{ url_for('admin_employee_requests') }}" class="btn {% if current_filter == 'pending' or current_filter is undefined %}btn-primary{% else %}btn-outline{% endif %}"><i class="fas fa-clock"></i> قيد الانتظار</a>
+        <a href="{{ url_for('admin_employee_requests', status='approved') }}" class="btn {% if current_filter == 'approved' %}btn-primary{% else %}btn-outline{% endif %}"><i class="fas fa-check"></i> تمت الموافقة</a>
+        <a href="{{ url_for('admin_employee_requests', status='rejected') }}" class="btn {% if current_filter == 'rejected' %}btn-primary{% else %}btn-outline{% endif %}"><i class="fas fa-times"></i> مرفوض</a>
+    </div>
+</div>
+
+{% if requests %}
+<div class="card">
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>نوع الطلب</th>
+                    <th>مقدم الطلب</th>
+                    <th>التفاصيل</th>
+                    <th>التاريخ</th>
+                    <th>الحالة</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in requests %}
+                <tr>
+                    <td><span class="badge badge-info">{{ r.action_label }}</span></td>
+                    <td>{{ r.requester.name if r.requester else '—' }}</td>
+                    <td style="font-size:13px;color:var(--text-muted);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                        {{ r.details_json[:100] if r.details_json else '—' }}{{ '...' if r.details_json and r.details_json|length > 100 }}
+                    </td>
+                    <td style="font-size:13px;color:var(--text-muted);">{{ r.created_at.strftime('%Y-%m-%d %H:%M') if r.created_at else '—' }}</td>
+                    <td>
+                        {% if r.status == 'pending' %}
+                        <span class="badge badge-warning">قيد الانتظار</span>
+                        {% elif r.status == 'approved' %}
+                        <span class="badge badge-success">تمت الموافقة</span>
+                        {% elif r.status == 'rejected' %}
+                        <span class="badge badge-danger">مرفوض</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if r.status == 'pending' and current_user.role in ('admin', 'manager') %}
+                        <form class="inline" method="POST" action="{{ url_for('admin_respond_request', rid=r.id) }}">
+                            <input type="text" name="notes" placeholder="ملاحظات..." style="width:110px;padding:4px 8px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px;margin-left:4px;font-family:inherit;">
+                            <button name="status" value="approved" class="btn btn-sm btn-success" title="موافقة"><i class="fas fa-check"></i></button>
+                            <button name="status" value="rejected" class="btn btn-sm btn-danger" title="رفض"><i class="fas fa-times"></i></button>
+                        </form>
+                        {% elif r.status != 'pending' %}
+                        <span style="font-size:12px;color:var(--text-muted);">
+                            {% if r.responded_by %}{{ r.responded_by.name }}{% endif %}
+                            {% if r.admin_notes %}: {{ r.admin_notes[:40] }}{% endif %}
+                        </span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="card">
+    <div class="empty-state">
+        <i class="fas fa-inbox"></i>
+        <p>لا توجد طلبات</p>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

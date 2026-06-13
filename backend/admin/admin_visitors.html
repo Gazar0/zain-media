@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Zain Media — الزوار{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1><i class="fas fa-eye"></i> الزوار</h1>
+        <p>الإجمالي: {{ total }} | زوار اليوم: {{ today }}</p>
+    </div>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px">
+    <div class="stat-card">
+        <div class="num">{{ total }}</div>
+        <div class="label">إجمالي الزوار</div>
+    </div>
+    <div class="stat-card">
+        <div class="num">{{ today }}</div>
+        <div class="label">زوار اليوم</div>
+    </div>
+    <div class="stat-card">
+        {% set browsers = visitors|map(attribute='browser')|reject('none')|reject('equalto','')|list %}
+        <div class="num">{{ browsers|length }}</div>
+        <div class="label">متصفحات مسجلة</div>
+    </div>
+    <div class="stat-card">
+        {% set locations = visitors|selectattr('country')|list %}
+        <div class="num">{{ locations|length }}</div>
+        <div class="label">مواقع مسجلة</div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>IP</th>
+                    <th>المتصفح</th>
+                    <th>نظام التشغيل</th>
+                    <th>الجهاز</th>
+                    <th>الشاشة</th>
+                    <th>اللغة</th>
+                    <th>الدولة</th>
+                    <th>المدينة</th>
+                    <th>الموقع</th>
+                    <th>تاريخ</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for v in visitors %}
+                <tr>
+                    <td>{{ v.id }}</td>
+                    <td style="direction:ltr;font-family:'Inter',sans-serif;font-size:12px">{{ v.ip or '—' }}</td>
+                    <td>{{ v.browser or '—' }}</td>
+                    <td>{{ v.os or '—' }}</td>
+                    <td>{{ v.device or '—' }}</td>
+                    <td style="font-size:12px">{{ v.screen_size or '—' }}</td>
+                    <td style="font-size:12px">{{ v.language or '—' }}</td>
+                    <td>{{ v.country or '—' }}</td>
+                    <td>{{ v.city or '—' }}</td>
+                    <td style="font-size:12px">
+                        {% if v.lat and v.lng %}
+                        <a href="https://maps.google.com/?q={{ v.lat }},{{ v.lng }}" target="_blank" class="btn btn-sm btn-outline" style="font-size:10px">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </a>
+                        {% else %}—{% endif %}
+                    </td>
+                    <td style="font-size:11px;color:var(--text-muted);font-family:'Inter',sans-serif">
+                        {{ v.visited_at.strftime('%Y-%m-%d %H:%M') if v.visited_at else '—' }}
+                    </td>
+                </tr>
+                {% endfor %}
+                {% if not visitors %}
+                <tr><td colspan="11"><div class="empty-state"><i class="fas fa-eye-slash"></i><p>لا زوار حتى الآن</p></div></td></tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

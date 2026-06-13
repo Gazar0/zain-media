@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zain Media — بوابة الموظفين</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#08080F;--bg-card:rgba(255,255,255,0.03);--bg-alt:#0D0D1A;--border:rgba(255,255,255,0.06);--text:#F1F1F7;--text-muted:#8B8FA3;--primary:#7C3AED;--primary-light:#A78BFA;--radius:16px;--emerald:#10B981;--emerald-light:#34D399}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);padding:20px}
+.container{max-width:1200px;margin:0 auto}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;padding:16px 20px;background:var(--bg-alt);border:1px solid var(--border);border-radius:var(--radius)}
+.header h1{font-size:20px;font-weight:800;display:flex;align-items:center;gap:8px}
+.header h1 i{color:var(--primary-light)}
+.header .user-info{font-size:13px;color:var(--text-muted);display:flex;align-items:center;gap:10px}
+.header .user-info .role-badge{padding:2px 10px;border-radius:50px;font-size:11px;font-weight:700;background:rgba(124,58,237,0.12);color:var(--primary-light)}
+.nav-tabs{display:flex;gap:4px;margin-bottom:20px;flex-wrap:wrap}
+.nav-tabs .tab{font-size:13px;font-weight:600;padding:8px 18px;border-radius:50px;border:1px solid var(--border);cursor:pointer;transition:all .25s;background:transparent;color:var(--text-muted);font-family:inherit}
+.nav-tabs .tab:hover{border-color:var(--primary-light);color:var(--text)}
+.nav-tabs .tab.active{background:linear-gradient(135deg,var(--primary),#EC4899);border-color:transparent;color:#fff}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:50px;font-size:14px;font-weight:600;font-family:inherit;border:none;cursor:pointer;transition:all 0.3s;text-decoration:none}
+.btn-primary{background:linear-gradient(135deg,var(--primary),#EC4899);color:#fff}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(124,58,237,0.3)}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
+.btn-outline:hover{border-color:var(--primary-light)}
+.btn-sm{padding:8px 16px;font-size:12px}
+.btn-danger{background:#EF4444;color:#fff}
+.btn-danger:hover{background:#DC2626}
+.btn-success{background:var(--emerald);color:#fff}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.card{background:var(--bg-alt);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:20px}
+.card h2{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.card h2 i{color:var(--primary-light)}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:13px;font-weight:600;color:var(--text-muted);margin-bottom:4px}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:inherit;font-size:13px;transition:border-color 0.3s}
+.form-group input:focus,.form-group select:focus{outline:none;border-color:var(--primary-light)}
+.form-group select option{background:#0D0D1A;color:var(--text)}
+.form-status{padding:10px 14px;border-radius:12px;font-size:13px;display:none;margin-top:10px}
+.form-status.success{display:block;background:rgba(16,185,129,0.1);color:var(--emerald-light);border:1px solid rgba(16,185,129,0.2)}
+.form-status.error{display:block;background:rgba(239,68,68,0.1);color:#F87171;border:1px solid rgba(239,68,68,0.2)}
+.tabs-mini{display:flex;gap:4px;margin-bottom:10px}
+.tabs-mini .tab-mini{font-size:12px;font-weight:600;padding:5px 14px;border-radius:50px;border:1px solid var(--border);cursor:pointer;transition:all .25s;background:transparent;color:var(--text-muted);font-family:inherit}
+.tabs-mini .tab-mini:hover{border-color:var(--primary-light);color:var(--text)}
+.tabs-mini .tab-mini.active{background:var(--primary);border-color:var(--primary);color:#fff}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{padding:10px 12px;text-align:center;border-bottom:1px solid var(--border);color:var(--text-muted);font-weight:700;font-size:12px}
+td{padding:10px 12px;text-align:center;border-bottom:1px solid var(--border);color:var(--text)}
+tr:hover td{background:rgba(255,255,255,0.02)}
+.serial{color:var(--primary-light);font-weight:700;font-family:'Inter',sans-serif}
+.inv-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.inv-item:last-child{border-bottom:none}
+.inv-item .desc{flex:1;font-weight:600}
+.inv-item .price{color:var(--emerald-light);font-weight:700;font-family:'Inter',sans-serif}
+.inv-total{padding:12px 0;border-top:1px solid var(--border);margin-top:8px;display:flex;justify-content:space-between;font-size:15px;font-weight:800}
+.inv-total .val{color:var(--emerald-light);font-size:20px;font-family:'Inter',sans-serif}
+.tag{display:inline-block;padding:2px 10px;border-radius:50px;font-size:11px;font-weight:700}
+.tag-company{background:rgba(124,58,237,0.12);color:var(--primary-light)}
+.tag-individual{background:rgba(16,185,129,0.1);color:var(--emerald-light)}
+.source-badge{font-size:11px;color:var(--text-muted)}
+.byline{font-size:12px;color:var(--text-muted);margin-top:6px}
+.byline i{color:var(--primary-light)}
+.search-box{display:flex;gap:8px;margin-bottom:14px}
+.search-box input{flex:1;padding:10px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:inherit;font-size:13px}
+.search-box input:focus{outline:none;border-color:var(--primary-light)}
+.search-box button{padding:10px 18px;border-radius:12px;border:none;background:var(--primary);color:#fff;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600}
+@media(max-width:768px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<h1><i class="fas fa-user-tie"></i> بوابة الموظفين</h1>
+<div class="user-info">
+<span>{{ current_user.name or current_user.username }}</span>
+<span class="role-badge">{{ current_user.role_icon }} {{ current_user.role_label }}</span>
+<a href="{{ url_for('admin_logout') }}" class="btn btn-outline btn-sm"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a>
+</div>
+</div>
+
+<div class="nav-tabs">
+<button class="tab active" onclick="switchTab('tabCustomers',this)"><i class="fas fa-users"></i> العملاء</button>
+<button class="tab" onclick="switchTab('tabAddCustomer',this)"><i class="fas fa-user-plus"></i> إضافة عميل</button>
+<button class="tab" onclick="switchTab('tabInvoice',this)"><i class="fas fa-file-invoice"></i> إنشاء فاتورة</button>
+</div>
+
+<!-- ═══ Customers Tab ═══ -->
+<div class="tab-content active" id="tabCustomers">
+<div class="card">
+<div class="tabs-mini">
+<button class="tab-mini active" onclick="switchSearch('searchByName',this)"><i class="fas fa-search"></i> بحث بالاسم / الموبايل</button>
+<button class="tab-mini" onclick="switchSearch('searchByCode',this)"><i class="fas fa-barcode"></i> بحث بالكود</button>
+</div>
+<div class="search-box" id="searchByName">
+<input type="text" id="searchInput1" placeholder="ابحث باسم العميل أو رقم الموبايل..." onkeyup="searchCustomers()">
+<button onclick="searchCustomers()"><i class="fas fa-search"></i></button>
+</div>
+<div class="search-box" id="searchByCode" style="display:none">
+<input type="text" id="searchInput2" placeholder="ابحث بكود العميل..." onkeyup="searchCustomers()">
+<button onclick="searchCustomers()"><i class="fas fa-search"></i></button>
+</div>
+<div id="custTableWrap">
+<table>
+<thead><tr>
+<th>الكود</th><th>الاسم</th><th>الهاتف</th><th>النوع</th><th>المصدر</th><th>أضيف بواسطة</th><th>التاريخ</th>
+</tr></thead>
+<tbody id="custTableBody"></tbody>
+</table>
+</div>
+<div id="custEmpty" style="text-align:center;padding:40px 0;color:var(--text-muted);display:none">
+<i class="fas fa-users" style="font-size:40px;opacity:.3;display:block;margin-bottom:12px"></i>
+لا يوجد عملاء
+</div>
+</div>
+</div>
+
+<!-- ═══ Add Customer Tab ═══ -->
+<div class="tab-content" id="tabAddCustomer">
+<div class="card">
+<h2><i class="fas fa-user-plus"></i> إضافة عميل جديد</h2>
+<form id="custForm">
+<div class="form-group">
+<label>الاسم *</label>
+<input type="text" id="cName" required placeholder="اسم العميل">
+</div>
+<div class="form-group">
+<label>رقم الهاتف</label>
+<input type="text" id="cPhone" placeholder="رقم التليفون" dir="ltr">
+</div>
+<div class="form-group">
+<label>البريد الإلكتروني</label>
+<input type="email" id="cEmail" placeholder="example@email.com">
+</div>
+<div class="form-group">
+<label>نوع العميل</label>
+<div class="tabs-mini" id="typeTabs">
+<button type="button" class="tab-mini" data-type="company" onclick="selectType('company',this)">🏢 شركة</button>
+<button type="button" class="tab-mini active" data-type="individual" onclick="selectType('individual',this)">👤 فرد</button>
+</div>
+<input type="hidden" id="cType" value="individual">
+</div>
+<div class="form-group">
+<label>كيف تعرفت علينا؟</label>
+<select id="cSource">
+<option value="">— اختر —</option>
+<option value="فيسبوك">فيسبوك</option>
+<option value="إنستجرام">إنستجرام</option>
+<option value="تيك توك">تيك توك</option>
+<option value="جوجل">جوجل</option>
+<option value="توصية من صديق">توصية من صديق</option>
+<option value="إعلان">إعلان</option>
+<option value="واتساب">واتساب</option>
+<option value="آخر">آخر</option>
+</select>
+</div>
+<button type="submit" class="btn btn-primary" style="width:100%;justify-content:center"><i class="fas fa-save"></i> حفظ العميل</button>
+<div class="form-status" id="custStatus"></div>
+</form>
+</div>
+</div>
+
+<!-- ═══ Invoice Tab ═══ -->
+<div class="tab-content" id="tabInvoice">
+<div class="card">
+<h2><i class="fas fa-file-invoice"></i> إنشاء فاتورة</h2>
+<div id="invItems"></div>
+<div class="form-group" style="display:flex;gap:8px;flex-wrap:wrap">
+<input type="text" id="iDesc" placeholder="وصف الخدمة" style="flex:2;padding:10px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:13px;font-family:inherit">
+<input type="number" id="iQty" value="1" min="1" style="flex:0 0 60px;padding:10px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:13px;text-align:center">
+<input type="number" id="iPrice" value="0" min="0" step="0.01" placeholder="السعر" style="flex:1;padding:10px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:13px">
+<button class="btn btn-primary btn-sm" onclick="addItem()"><i class="fas fa-plus"></i></button>
+</div>
+<div id="invList"></div>
+<div class="inv-total"><span>الإجمالي</span><span class="val" id="invGrand">0.00 ج.م</span></div>
+<div style="display:flex;gap:8px;margin-top:12px">
+<input type="text" id="iClient" placeholder="اسم العميل" style="flex:1;padding:10px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:13px;font-family:inherit">
+<input type="text" id="iClientPhone" placeholder="التليفون" style="flex:1;padding:10px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:13px;font-family:inherit" dir="ltr">
+</div>
+<div class="byline"><i class="fas fa-user"></i> تم الإضافة بواسطة: {{ current_user.name or current_user.username }}</div>
+<button class="btn btn-primary" onclick="saveInvoice()" style="width:100%;justify-content:center;margin-top:10px"><i class="fas fa-save"></i> حفظ الفاتورة</button>
+<div class="form-status" id="invStatus"></div>
+</div>
+</div>
+</div>
+
+<script>
+// ─── Tab switching ───
+function switchTab(id,btn){
+document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+document.getElementById(id).classList.add('active');
+document.querySelectorAll('.nav-tabs .tab').forEach(t=>t.classList.remove('active'));
+btn.classList.add('active')
+}
+
+// ─── Search tab switching ───
+function switchSearch(id,btn){
+document.getElementById('searchByName').style.display='none';
+document.getElementById('searchByCode').style.display='none';
+document.getElementById(id).style.display='flex';
+document.querySelectorAll('.tabs-mini .tab-mini').forEach(t=>t.classList.remove('active'));
+btn.classList.add('active')
+}
+
+// ─── Customer type tabs ───
+function selectType(val,btn){
+document.getElementById('cType').value=val;
+document.getElementById('typeTabs').querySelectorAll('.tab-mini').forEach(t=>t.classList.remove('active'));
+btn.classList.add('active')
+}
+
+// ─── Search customers ───
+let allCustomers=[];
+async function loadCustomers(){
+try{
+const res=await fetch('/api/customers');
+allCustomers=await res.json();
+renderCustomers(allCustomers)
+}catch(e){}
+}
+function searchCustomers(){
+const isCode=document.getElementById('searchByCode').style.display==='flex';
+const q=isCode?document.getElementById('searchInput2').value.trim().toLowerCase():document.getElementById('searchInput1').value.trim().toLowerCase();
+if(!q){renderCustomers(allCustomers);return}
+const filtered=allCustomers.filter(c=>{
+if(isCode) return c.code.includes(q);
+return c.name.toLowerCase().includes(q)||c.phone.includes(q)
+});
+renderCustomers(filtered)
+}
+function renderCustomers(list){
+const tbody=document.getElementById('custTableBody');
+const empty=document.getElementById('custEmpty');
+if(!list.length){tbody.innerHTML='';empty.style.display='block';return}
+empty.style.display='none';
+tbody.innerHTML=list.map(c=>{
+const typeLabel=c.customer_type==='company'?'🏢 شركة':'👤 فرد';
+const typeClass=c.customer_type==='company'?'tag-company':'tag-individual';
+return '<tr><td class="serial">'+c.code+'</td><td>'+c.name+'</td><td dir="ltr" style="font-size:12px">'+(c.phone||'—')+'</td><td><span class="tag '+typeClass+'">'+typeLabel+'</span></td><td class="source-badge">'+(c.source||'—')+'</td><td style="font-size:12px;color:var(--text-muted)">'+(c.created_by||'—')+'</td><td style="font-size:12px;color:var(--text-muted)">'+new Date(c.created_at).toLocaleDateString('ar-EG')+'</td></tr>'
+}).join('')
+}
+
+// ─── Add Customer ───
+document.getElementById('custForm').addEventListener('submit', async function(e){
+e.preventDefault();
+const name=document.getElementById('cName').value.trim();
+const phone=document.getElementById('cPhone').value.trim();
+const email=document.getElementById('cEmail').value.trim();
+const customer_type=document.getElementById('cType').value;
+const source=document.getElementById('cSource').value;
+const status=document.getElementById('custStatus');
+if(!name){status.className='form-status error';status.textContent='❌ أدخل اسم العميل';status.style.display='block';return}
+try{
+const res=await fetch('/api/customers',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,phone,email,customer_type,source})});
+const data=await res.json();
+if(res.ok){
+status.className='form-status success';status.textContent='✅ تم إضافة '+name+' بكود '+data.code;status.style.display='block';
+document.getElementById('cName').value='';document.getElementById('cPhone').value='';document.getElementById('cEmail').value='';document.getElementById('cSource').value='';
+loadCustomers();
+setTimeout(()=>status.style.display='none',3000)
+}else{throw new Error(data.error||'خطأ')}
+}catch(err){status.className='form-status error';status.textContent='❌ '+err.message;status.style.display='block'}
+});
+
+// ─── Invoice ───
+let items=[];
+function addItem(){
+const desc=document.getElementById('iDesc').value.trim();
+const qty=parseInt(document.getElementById('iQty').value)||1;
+const price=parseFloat(document.getElementById('iPrice').value)||0;
+if(!desc||price<=0)return;
+items.push({desc,qty,unitPrice:price,total:price*qty});
+renderItems();
+document.getElementById('iDesc').value='';document.getElementById('iPrice').value='0';document.getElementById('iQty').value='1'
+}
+function renderItems(){
+const el=document.getElementById('invList');
+if(!items.length){el.innerHTML='<div style="padding:12px 0;color:var(--text-muted);font-size:13px">أضف خدمات للفاتورة</div>';updateTotal();return}
+el.innerHTML=items.map((it,i)=>'<div class="inv-item"><span class="desc">'+it.desc+'</span><span style="color:var(--text-muted);font-size:12px">×'+it.qty+'</span><span class="price">'+it.total.toFixed(2)+' ج.م</span><button onclick="items.splice('+i+',1);renderItems()" style="background:none;border:none;color:#EF4444;cursor:pointer"><i class="fas fa-times"></i></button></div>').join('');
+updateTotal()
+}
+function updateTotal(){
+const total=items.reduce((s,i)=>s+i.total,0);
+document.getElementById('invGrand').textContent=total.toFixed(2)+' ج.م'
+}
+async function saveInvoice(){
+if(!items.length){const s=document.getElementById('invStatus');s.className='form-status error';s.textContent='❌ أضف خدمات أولاً';s.style.display='block';setTimeout(()=>s.style.display='none',3000);return}
+const data={
+items:items.map(i=>({desc:i.desc,qty:i.qty,unitPrice:i.unitPrice,total:i.total})),
+customer_name:document.getElementById('iClient').value.trim()||'—',
+customer_phone:document.getElementById('iClientPhone').value.trim()||'',
+disc_pct:0,disc_amt:0,
+grand_total:items.reduce((s,i)=>s+i.total,0)
+};
+try{
+const res=await fetch('/api/invoices',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+const result=await res.json();
+if(res.ok){
+const s=document.getElementById('invStatus');
+s.className='form-status success';s.textContent='✅ تم حفظ الفاتورة رقم #'+String(result.serial).padStart(4,'0');s.style.display='block';
+setTimeout(()=>s.style.display='none',3000);
+items=[];renderItems();
+document.getElementById('iClient').value='';document.getElementById('iClientPhone').value=''
+}else{throw new Error(result.error||'خطأ')}
+}catch(err){const s=document.getElementById('invStatus');s.className='form-status error';s.textContent='❌ '+err.message;s.style.display='block'}
+}
+
+// ─── Init ───
+loadCustomers()
+</script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Zain Media — الإعدادات{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>الإعدادات</h1>
+        <p>تغيير كلمة المرور وإعدادات الحساب</p>
+    </div>
+</div>
+
+<div class="card" style="max-width:500px;">
+    <h2 style="font-size:18px;margin-bottom:20px;"><i class="fas fa-key"></i> تغيير كلمة المرور</h2>
+    <form method="POST">
+        <div class="form-group">
+            <label>كلمة المرور الحالية</label>
+            <input type="password" name="current_password" required>
+        </div>
+        <div class="form-group">
+            <label>كلمة المرور الجديدة</label>
+            <input type="password" name="new_password" required minlength="6">
+        </div>
+        <div class="form-group">
+            <label>تأكيد كلمة المرور الجديدة</label>
+            <input type="password" name="confirm_password" required>
+        </div>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> حفظ التغييرات</button>
+    </form>
+</div>
+
+<div class="card" style="max-width:500px;margin-top:24px;">
+    <h2 style="font-size:18px;margin-bottom:20px;"><i class="fas fa-info-circle"></i> معلومات النظام</h2>
+    <table>
+        <tr><td style="border:none;padding:8px 0;color:var(--text-muted);">نسخة النظام</td><td style="border:none;padding:8px 0;">2.0.0</td></tr>
+        <tr><td style="border:none;padding:8px 0;color:var(--text-muted);">المستخدم</td><td style="border:none;padding:8px 0;">{{ current_user.username }}</td></tr>
+        <tr><td style="border:none;padding:8px 0;color:var(--text-muted);">الدور</td><td style="border:none;padding:8px 0;">{{ current_user.role_icon }} {{ current_user.role_label }}</td></tr>
+        <tr><td style="border:none;padding:8px 0;color:var(--text-muted);">البريد</td><td style="border:none;padding:8px 0;">{{ current_user.email or '—' }}</td></tr>
+    </table>
+</div>
+{% endblock %}

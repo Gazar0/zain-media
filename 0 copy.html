@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Screen — حاسبة التسعير الاحترافية</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@400;500;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://accounts.google.com/gsi/client"></script>
+  <style>    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0f0f14;
+      --bg-card: #181820;
+      --bg-el: #22222e;
+      --bg-hover: #2a2a38;
+      --border: #2e2e3e;
+      --text: #e8e8f0;
+      --text-sec: #8888a0;
+      --text-muted: #5c5c72;
+      --orange: #f97316;
+      --orange-hover: #ea580c;
+      --orange-glow: rgba(249,115,22,0.12);
+      --green: #22c55e;
+      --red: #ef4444;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --radius-lg: 16px;
+    }
+    body { font-family: 'Cairo', 'Tajawal', sans-serif; background: var(--bg); color: var(--text); direction: rtl; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 12px; }
+    .app { width: 1440px; max-width: 100%; display: flex; gap: 14px; align-items: flex-start; }
+    .main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+    .sidebar { width: 380px; min-width: 300px; display: flex; flex-direction: column; gap: 12px; position: sticky; top: 12px; }
+    .card { background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border); }
+    .card-body { padding: 16px; }
+    .tabs { display: flex; gap: 3px; background: var(--bg-el); padding: 5px; border-radius: var(--radius); overflow-x: auto; flex-wrap: wrap; }
+    .tabs::-webkit-scrollbar { height: 3px; }
+    .tabs::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    #tab-bar { display: flex; gap: 4px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    #tab-bar::-webkit-scrollbar { display: none; }
+    .tab-btn { padding: 7px 14px; border-radius: var(--radius-sm); border: none; background: transparent; color: var(--text-sec); font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.15s; white-space: nowrap; flex-shrink: 0; }
+    .tab-btn.active { background: var(--orange); color: #fff; }
+    .tab-btn:hover:not(.active) { color: var(--text); background: var(--bg-hover); }
+    .work { display: flex; gap: 0; min-height: 380px; }
+    .svc-list { width: 170px; min-width: 140px; border-left: 1px solid var(--border); padding: 12px; display: flex; flex-direction: column; gap: 1px; }
+    .svc-list .lbl { font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+    .svc-item { padding: 7px 10px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 600; color: var(--text-sec); cursor: pointer; transition: all 0.12s; display: flex; align-items: center; gap: 7px; }
+    .svc-item .dot { width: 5px; height: 5px; border-radius: 50%; background: transparent; flex-shrink: 0; }
+    .svc-item.active { color: var(--text); background: var(--bg-hover); }
+    .svc-item.active .dot { background: var(--orange); }
+    .svc-item:hover:not(.active) { color: var(--text); }
+    .form { flex: 1; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+    .form-hdr { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 800; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+    .form-hdr i { color: var(--orange); font-size: 14px; }
+    .form-hdr small { font-weight: 400; color: var(--text-sec); font-size: 11px; margin-right: auto; }
+    .row { display: flex; gap: 10px; }
+    .row .fld { flex: 1; min-width: 0; }
+    .fld label { display: block; font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 3px; }
+    .fld input, .fld select { width: 100%; padding: 8px 12px; background: var(--bg-el); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: inherit; font-size: 13px; font-weight: 600; direction: rtl; transition: border 0.15s; }
+    .fld input:focus, .fld select:focus { outline: none; border-color: var(--orange); box-shadow: 0 0 0 2px var(--orange-glow); }
+    .fld select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%238888a0' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: left 10px center; padding-left: 28px; }
+    .chk-group { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chk-group label { display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: var(--radius-sm); background: var(--bg-el); border: 1px solid var(--border); cursor: pointer; font-size: 11px; font-weight: 600; color: var(--text-sec); transition: all 0.12s; }
+    .chk-group label.checked { background: linear-gradient(135deg, rgba(249,115,22,0.15), rgba(168,85,247,0.1)); border-color: var(--orange); color: var(--orange); }
+    .chk-group input { display: none; }
+    .total-box { background: var(--bg-el); border-radius: var(--radius); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
+    .total-box .l { font-size: 12px; font-weight: 700; color: var(--text-sec); }
+    .total-box .l small { font-size: 10px; color: var(--text-muted); display: block; }
+    .total-box .p { font-size: 22px; font-weight: 900; color: var(--orange); font-family: 'Inter', sans-serif; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 18px; border-radius: var(--radius-sm); border: none; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.15s; }
+    .btn-orange { background: linear-gradient(135deg, var(--orange), #ea580c); color: #fff; box-shadow: 0 4px 15px rgba(249,115,22,0.25); }
+    .btn-orange:hover { background: var(--orange-hover); box-shadow: 0 6px 25px rgba(249,115,22,0.35); transform: translateY(-1px); }
+    .btn-full { width: 100%; }
+    .btn-sm { padding: 5px 10px; font-size: 11px; }
+    .btn-ghost { background: transparent; color: var(--text-sec); }
+    .btn-ghost:hover { color: var(--red); }
+    .btn-green { background: var(--green); color: #fff; }
+    .btn-green:hover { filter: brightness(1.1); }
+    .summary-hdr { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid var(--border); }
+    .summary-hdr h3 { font-size: 14px; font-weight: 800; display: flex; align-items: center; gap: 7px; }
+    .summary-hdr h3 .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--orange); }
+    .scrl { flex: 1; overflow-y: auto; max-height: 240px; }
+    .scrl::-webkit-scrollbar { width: 4px; }
+    .scrl::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    .inv-table { width: 100%; border-collapse: collapse; }
+    .inv-table th { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; text-align: center; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+    .inv-table th:first-child { text-align: right; }
+    .inv-table td { padding: 8px 10px; text-align: center; font-size: 12px; border-bottom: 1px solid var(--border); color: var(--text-sec); }
+    .inv-table td:first-child { text-align: right; color: var(--text); font-weight: 600; }
+    .inv-table tbody tr:hover { background: var(--bg-hover); }
+    .inv-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 30px 20px; text-align: center; }
+    .inv-empty i { font-size: 34px; color: var(--text-muted); opacity: 0.35; }
+    .inv-empty p { font-size: 13px; color: var(--text-muted); }
+    .totals { padding: 14px 18px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
+    .t-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
+    .t-row .v { font-family: 'Inter', sans-serif; font-weight: 700; }
+    .t-row.disc { gap: 6px; }
+    .t-row.disc .fld { display: flex; align-items: center; gap: 4px; }
+    .t-row.disc input { width: 52px; padding: 4px 6px; background: var(--bg-el); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: inherit; font-size: 12px; font-weight: 700; text-align: center; direction: ltr; }
+    .t-row.disc input:focus { border-color: var(--orange); outline: none; }
+    .t-row.disc span { font-size: 11px; color: var(--text-muted); }
+    .t-row.grand { font-size: 16px; font-weight: 800; }
+    .t-row.grand .v { color: var(--orange); font-size: 20px; }
+    .client-sec { padding: 12px 18px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
+    .client-sec input { width: 100%; padding: 8px 12px; background: var(--bg-el); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: inherit; font-size: 12px; direction: rtl; }
+    .client-sec input:focus { border-color: var(--orange); outline: none; }
+    .client-sec input::placeholder { color: var(--text-muted); }
+    .ctrls { display: flex; gap: 8px; padding: 12px 18px; border-top: 1px solid var(--border); }
+    .ctrls .btn { flex: 1; }
+    .drive-sec { padding: 10px 18px; border-top: 1px solid var(--border); font-size: 11px; }
+    .drive-hdr { font-size: 10px; font-weight: 800; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.3px; }
+    .drive-hdr i { margin-left: 4px; color: #4285f4; }
+    .drive-config { display: flex; gap: 4px; flex-direction: column; }
+    .drive-config input { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 5px 8px; color: var(--text); font-size: 10px; direction: ltr; text-align: left; font-family: monospace; }
+    .drive-config input::placeholder { color: var(--text-muted); font-size: 9px; }
+    .drive-actions { display: flex; gap: 4px; flex-wrap: wrap; }
+    .drive-status { font-size: 10px; color: var(--text-sec); margin-top: 4px; min-height: 14px; }
+    .btn-sm { font-size: 10px; padding: 4px 8px; border-radius: 6px; }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-sec); }
+    .btn-outline:hover { border-color: var(--orange); color: var(--orange); }
+    .sidebar .card { flex: 1; display: flex; flex-direction: column; }
+    .sidebar .card .sc { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    @media (max-width: 960px) {
+      .app { flex-direction: column; }
+      .sidebar { width: 100%; min-width: 0; position: static; }
+      .work { flex-direction: column; }
+      .svc-list { width: 100%; border-left: none; border-bottom: 1px solid var(--border); flex-direction: row; flex-wrap: wrap; gap: 3px; padding: 10px 14px; }
+      .svc-list .lbl { width: 100%; margin-bottom: 2px; }
+      .svc-item { padding: 5px 8px; font-size: 11px; }
+      .row { flex-direction: column; }
+      .total-box { flex-direction: column; gap: 6px; text-align: center; }
+    }
+
+    /* === Glass & Effects === */
+    .glass { background: rgba(24,24,32,0.7); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid var(--border); }
+    .glass-strong { background: rgba(24,24,32,0.85); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); border: 1px solid var(--border); }
+    .text-gradient { background: linear-gradient(135deg, var(--orange), #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .glow-text { text-shadow: 0 0 20px rgba(249,115,22,0.3); }
+    .text-primary-glow { color: var(--orange); }
+
+    /* Navbar */
+    .navbar { position: sticky; top: 0; z-index: 50; background: rgba(15,15,20,0.85); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+    .nav-inner { max-width: 1480px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-logo svg { width: 36px; height: 36px; flex-shrink: 0; }
+    .nav-logo .brand { font-size: 15px; font-weight: 900; color: var(--text); line-height: 1.2; }
+    .nav-logo .brand small { display: block; font-size: 10px; font-weight: 400; color: var(--text-muted); }
+    .nav-actions { display: flex; align-items: center; gap: 8px; }
+
+    /* Hero */
+    .hero { position: relative; overflow: hidden; padding: 40px 16px 48px; text-align: center; }
+    .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(249,115,22,0.06) 0%, transparent 70%); pointer-events: none; }
+    .hero-inner { max-width: 700px; margin: 0 auto; position: relative; }
+    .hero-logo { display: flex; justify-content: center; margin-bottom: 20px; }
+    .hero-logo svg { width: 100px; height: 100px; filter: drop-shadow(0 0 30px rgba(249,115,22,0.2)); }
+    @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    .hero-float { animation: float 4s ease-in-out infinite; }
+    .hero-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 14px; border-radius: 50px; background: rgba(249,115,22,0.1); border: 1px solid rgba(249,115,22,0.3); font-size: 11px; font-weight: 700; color: var(--orange); margin-bottom: 18px; }
+    .hero-title { font-size: 28px; font-weight: 900; line-height: 1.25; margin-bottom: 10px; color: var(--text); }
+    .hero-desc { font-size: 13px; color: var(--text-sec); max-width: 500px; margin: 0 auto; line-height: 1.7; }
+    .hero-divider { width: 60%; height: 1px; margin: 26px auto 0; background: linear-gradient(90deg, transparent, rgba(249,115,22,0.3), transparent); }
+
+    /* Enhanced total box */
+    .total-box { background: linear-gradient(135deg, rgba(249,115,22,0.08), rgba(168,85,247,0.05)); border: 1px solid rgba(249,115,22,0.2); border-radius: var(--radius); padding: 14px 16px; margin-top: auto; }
+    .brk-row { display: flex; justify-content: space-between; align-items: center; font-size: 11px; padding: 2px 0; }
+    .brk-row .lbl { color: var(--text-muted); }
+    .brk-row .val { font-family: 'Inter', sans-serif; font-weight: 600; color: var(--text-sec); }
+    .brk-divider { height: 1px; background: var(--border); margin: 6px 0; }
+    .brk-total { display: flex; justify-content: space-between; align-items: center; padding-top: 2px; }
+    .brk-total .lbl { font-size: 11px; font-weight: 700; color: var(--text-sec); }
+    .brk-total .val { font-size: 20px; font-weight: 900; color: var(--orange); font-family: 'Inter', sans-serif; }
+
+    /* Special tab styles */
+    .sp-card { background: var(--bg-card); border-radius: var(--radius); border: 1px solid var(--border); padding: 20px; }
+    .sp-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--text); display: flex; align-items: center; gap: 6px; }
+    .sp-card h3 i { color: var(--orange); }
+    .sp-card .sp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+    .sp-card .sp-grid .fld { display: flex; flex-direction: column; gap: 3px; }
+    .sp-card .sp-grid .fld label { font-size: 10px; color: var(--text-muted); font-weight: 600; }
+    .sp-card .sp-grid .fld input { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 7px 10px; color: var(--text); font-size: 12px; }
+    .sp-table-wrap { overflow-x: auto; margin-top: 14px; }
+    .sp-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    .sp-table th { background: var(--bg-el); color: var(--text-sec); font-weight: 700; padding: 8px 10px; text-align: center; border-bottom: 1px solid var(--border); font-size: 10px; text-transform: uppercase; letter-spacing: 0.3px; }
+    .sp-table td { padding: 8px 10px; text-align: center; border-bottom: 1px solid var(--border); color: var(--text); }
+    .sp-table tr:hover td { background: var(--bg-hover); }
+    .sp-table .serial { color: var(--orange); font-weight: 700; font-family: 'Inter', sans-serif; }
+    .sp-table .del-row td { color: var(--text-muted); text-decoration: line-through 1px rgba(239,68,68,0.3); }
+    .sp-actions { display: flex; gap: 4px; justify-content: center; }
+    .sp-actions button { background: none; border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; font-size: 10px; color: var(--text-sec); cursor: pointer; transition: 0.12s; }
+    .sp-actions button:hover { border-color: var(--orange); color: var(--orange); }
+    .sp-actions .btn-del:hover { border-color: var(--red); color: var(--red); }
+    .sp-empty { text-align: center; padding: 30px 20px; color: var(--text-muted); font-size: 12px; }
+    .sp-empty i { font-size: 28px; margin-bottom: 8px; opacity: 0.4; }
+    .sp-badge { display: inline-block; padding: 1px 8px; border-radius: 50px; font-size: 9px; font-weight: 700; }
+    .sp-badge-active { background: rgba(34,197,94,0.15); color: var(--green); }
+    .sp-badge-deleted { background: rgba(239,68,68,0.15); color: var(--red); }
+    .admin-lock { font-size: 10px; color: var(--text-muted); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .admin-lock input { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 4px 8px; color: var(--text); font-size: 11px; width: 120px; }
+    .admin-lock button { background: none; border: 1px solid var(--border); border-radius: 6px; padding: 3px 8px; font-size: 10px; color: var(--text-sec); cursor: pointer; }
+    .admin-lock button:hover { border-color: var(--orange); color: var(--orange); }
+
+    /* Branch section */
+    .branch-list { padding: 14px 18px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
+    .branch-list .hdr { display: flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 2px; }
+    .branch-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: var(--radius-sm); background: var(--bg-el); border: 1px solid var(--border); transition: all 0.12s; }
+    .branch-item:hover { border-color: rgba(249,115,22,0.4); }
+    .branch-item .bar { width: 3px; align-self: stretch; border-radius: 4px; background: linear-gradient(180deg, var(--orange), #a855f7); flex-shrink: 0; }
+    .branch-item .info { flex: 1; min-width: 0; }
+    .branch-item .info .name { font-size: 11px; font-weight: 700; }
+    .branch-item .info .addr { font-size: 10px; color: var(--text-muted); }
+    .branch-item .phone-link { color: var(--text-muted); font-size: 12px; transition: color 0.12s; text-decoration: none; }
+    .branch-item .phone-link:hover { color: var(--orange); }
+
+    /* Particle canvas */
+    #particle-canvas { position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.45; }
+
+    /* Animations */
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    .anim-fade { animation: fadeIn 0.5s ease forwards; opacity: 0; }
+
+    /* Print */
+    @media print {
+      .navbar, .hero, .branch-list, #particle-canvas { display: none !important; }
+      .sidebar .ctrls .btn:last-child { display: none !important; }
+    }
+
+    @media (max-width: 960px) {
+      .hero-title { font-size: 20px; }
+      .hero { padding: 24px 14px 28px; }
+      .hero-logo svg { width: 70px; height: 70px; }
+      .nav-inner { padding: 8px 12px; }
+      .nav-actions a span { display: none; }
+    }
+  </style>
+</head>
+<body>
+<canvas id="particle-canvas"></canvas>
+
+<div class="app">
+
+<div class="main">
+  <div class="tabs card" style="padding:5px;background:var(--bg-el);" id="tab-bar"></div>
+
+  <div class="card">
+    <div class="work" id="work-area">
+      <div class="svc-list" id="svc-list">
+        <div class="lbl">الخدمات</div>
+      </div>
+      <div class="form" id="form-area">
+        <div class="form-hdr"><i class="fas fa-print"></i> <span id="svc-title">اختر خدمة</span><small id="svc-unit"></small></div>
+        <div id="form-fields"></div>
+        <div class="total-box">
+          <div class="brk-row"><span class="lbl">سعر الوحدة</span><span class="val" id="brk-unit">0.00 ج.م</span></div>
+          <div class="brk-row"><span class="lbl">المجموع الفرعي</span><span class="val" id="brk-subtotal">0.00 ج.م</span></div>
+          <div class="brk-row" id="brk-addons-row" style="display:none"><span class="lbl">الإضافات</span><span class="val" id="brk-addons" style="color:var(--orange)">0.00 ج.م</span></div>
+          <div class="brk-row" id="brk-setup-row" style="display:none"><span class="lbl">رسوم التجهيز</span><span class="val" id="brk-setup" style="color:var(--orange)">0.00 ج.م</span></div>
+          <div class="brk-divider"></div>
+          <div class="brk-total"><span class="lbl">السعر الإجمالي</span><span class="val" id="total-price">0.00 ج.م</span></div>
+        </div>
+        <button class="btn btn-orange btn-full" onclick="addToInvoice()"><i class="fas fa-plus-circle"></i> إضافة للفاتورة</button>
+      </div>
+    </div>
+    <div id="special-area" style="display:none"></div>
+  </div>
+</div>
+
+<div class="sidebar">
+  <div class="card">
+    <div class="summary-hdr">
+      <h3><span class="dot"></span> ملخص التسعيرة</h3>
+      <button class="btn btn-ghost btn-sm" onclick="clearInvoice()"><i class="fas fa-trash-alt"></i> مسح الكل</button>
+    </div>
+    <div class="sc">
+      <div class="scrl">
+        <table class="inv-table"><thead><tr><th>الوصف</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th></tr></thead><tbody id="inv-body"></tbody></table>
+        <div class="inv-empty" id="inv-empty"><i class="fas fa-file-invoice"></i><p>أضف خدمات من القائمة على اليمين</p></div>
+      </div>
+      <div class="totals">
+        <div class="t-row"><span>المجموع الفرعي</span><span class="v" id="subtotal-v">0.00 ج.م</span></div>
+        <div class="t-row"><span>رسوم التجهيز</span><span class="v" id="setup-total-v" style="color:var(--orange);">0.00 ج.م</span></div>
+        <div class="t-row disc">
+          <span>الخصم</span>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <div class="fld"><input type="number" id="disc-pct" value="0" min="0" max="100" oninput="updateTotals()"><span>%</span></div>
+            <div class="fld"><input type="number" id="disc-amt" value="0" min="0" oninput="updateTotals()"><span>ج.م</span></div>
+          </div>
+        </div>
+        <div class="t-row grand"><span>الإجمالي</span><span class="v" id="grand-total-v">0.00 ج.م</span></div>
+      </div>
+      <div class="client-sec">
+        <input type="text" id="client-name" placeholder="اسم العميل (اختياري)">
+        <input type="text" id="client-phone" placeholder="التليفون (اختياري)">
+      </div>
+      <div class="ctrls">
+        <button class="btn btn-orange" onclick="printInvoice()"><i class="fas fa-print"></i> طباعة</button>
+        <button class="btn btn-green" onclick="saveInvoice()"><i class="fas fa-save"></i> حفظ</button>
+      </div>
+      <div class="drive-sec" id="drive-sec">
+        <div class="drive-hdr"><i class="fas fa-cloud"></i> Google Drive</div>
+        <div id="drive-config" class="drive-config">
+          <input type="text" id="gdrive-client-id" placeholder="Client ID (من Google Cloud)">
+          <button class="btn btn-sm btn-outline" onclick="saveDriveConfig()">حفظ الإعدادات</button>
+        </div>
+        <div class="drive-actions" id="drive-actions" style="display:none">
+          <button class="btn btn-sm btn-outline" onclick="authDrive()"><i class="fas fa-sign-in-alt"></i> تسجيل الدخول</button>
+          <button class="btn btn-sm btn-outline" id="drive-save-btn" onclick="saveToDrive()" style="display:none"><i class="fas fa-upload"></i> حفظ إلى Drive</button>
+          <button class="btn btn-sm btn-outline" id="drive-load-btn" onclick="loadFromDrive()" style="display:none"><i class="fas fa-download"></i> تحميل من Drive</button>
+        </div>
+        <div id="drive-status" class="drive-status"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+const CATALOG = {
+  tabs: [
+    { id:"digital", label:"طباعه ديجيتال", services:["kuchya","business-card","special-paper","sticker","id","client-paper"] },
+    { id:"onecolor", label:"One Color", services:["one-color-print"] },
+    { id:"services", label:"خدمات", services:["binding","staple","spot-uv","cutting","die","boxing","binding-cover","wire-binding","thread-binding","hard-cover","soft-cover","slitting","creasing","kafraj","dargala","scent"] },
+    { id:"cellophane-tab", label:"سلوفان", services:["cellophane-svc"] },
+    { id:"offset", label:"أوفست", services:["offset-full","offset-half"] },
+    { id:"other", label:"أخرى", services:["custom"] },
+    { id:"customers", label:"العملاء", special:true },
+    { id:"invoices", label:"الفواتير", special:true },
+    { id:"deleted", label:"المحذوفة", special:true }
+  ],
+  services: {
+    "kuchya":{name:"الكوشية",unit:"قطعة",tiers:[[Infinity,1]],setup:0,fields:[
+      {id:"size",label:"المقاس",type:"kuchya-size",def:"A3+",opts:[
+        ["25×35",JSON.stringify({1:[[100,3.74],[600,3.34],[Infinity,3.22]],2:[[100,5.75],[Infinity,4.95]],area:0.55,lam:0.575})],
+        ["A3+",JSON.stringify({1:[[50,7.48],[300,6.67],[Infinity,6.44]],2:[[50,11.50],[Infinity,9.89]],area:1.0,lam:1.15})],
+        ["70×33",JSON.stringify({1:[[50,13.23],[300,12.42],[Infinity,11.50]],2:[[50,16.10],[Infinity,14.95]],area:1.45,lam:1.725})],
+        ["100×33",JSON.stringify({1:[[Infinity,17.25]],2:[[Infinity,23.00]],area:2.08,lam:2.30})]
+      ]},
+      {id:"sides",label:"الطباعة",type:"select",def:"1",opts:[["وجه واحد","1"],["وجهين","2"]]},
+      {id:"weight",label:"وزن الورق",type:"weight",def:"150",opts:[["طبع 80 جم",0],["طبع 100 جم",0],["طبع 120 جم",0],["كوشيه 115 جم",0],["كوشية 130 جم",0],["كوشية 150 جم",0],["كوشية 170 جم",0],["كوشية 200 جم",0.46],["كوشية 250 جم",1.15],["كوشية 300 جم",1.84],["كوشية 350 جم",2.53]]},
+      {id:"cellophane",label:"السلوفان",type:"cellophane",def:"0",opts:[["بدون","0"],["وجه واحد","1"],["وجهين","2"]]}
+    ]},
+    "business-card":{name:"كارت شخصي",unit:"علبة",tiers:[[Infinity,1]],setup:0,fields:[
+      {id:"type",label:"النوع",type:"select",def:"normal",opts:[
+        ["طباعة عادية 350gsm","0"],
+        ["علبة كريستال وجه واحد","145"],
+        ["علبة كريستال وجه وظهر","150"],
+        ["علبة فبريانو وجه واحد","125"],
+        ["علبة فبريانو وجه وظهر","130"]
+      ]},
+      {id:"unit",label:"سعر الوحدة (ج.م)",type:"num",def:"0"}
+    ]},
+    "special-paper":{name:"ورق خاص",unit:"ورقة A3+",tiers:[[Infinity,23]],setup:0,fields:[
+      {id:"type",label:"نوع الورق",type:"select",def:"crystal",opts:[
+        ["كريستال","0"],
+        ["فبريانو","0"],
+        ["أوبالين","0"],
+        ["بريستول أبيض","0"],
+        ["بريستول كوشيه","0"]
+      ]},
+      {id:"sides",label:"الطباعة",type:"select",def:"1",opts:[["وجه واحد",1],["وجهين",1.25]]}
+    ]},
+    "sticker":{name:"استيكر",unit:"ورقة A3+",tiers:[[150,11],[Infinity,10.35]],setup:0,fields:[
+      {id:"addons",label:"إضافات",type:"check",opts:[["lam","سلوفان",50],["die","بصمة/دق",120]]}
+    ]},
+    "id":{name:"ID",unit:"كارت",tiers:[[10,30],[50,22],[Infinity,18]],setup:0,fields:[
+      {id:"sides",label:"الطباعة",type:"select",def:"1",opts:[["وجه واحد",1],["وجهين",1.7]]}
+    ]},
+    "client-paper":{name:"ورق العميل",unit:"ورقة",tiers:[[100,1.2],[500,0.9],[Infinity,0.7]],setup:0,fields:[
+      {id:"size",label:"المقاس",type:"select",def:"A4",opts:[["A5",0.7],["A4",1],["A3",1.7]]},
+      {id:"sides",label:"الطباعة",type:"select",def:"1",opts:[["وجه واحد",1],["وجهين",1.7]]}
+    ]},
+    "one-color-print":{name:"طباعة لون واحد",unit:"فرخ",tiers:[[500,0.6],[2000,0.45],[Infinity,0.3]],setup:50,fields:[
+      {id:"size",label:"المقاس",type:"select",def:"A4",opts:[["A5",0.7],["A4",1],["A3",1.7]]},
+      {id:"weight",label:"وزن الورق",type:"select",def:"150",opts:[["80 جم",0.85],["120 جم",0.95],["150 جم",1],["200 جم",1.15],["300 جم",1.35]]}
+    ]},
+    "cellophane-svc":{name:"سلوفان",unit:"ورقة",tiers:[[Infinity,1]],setup:0,fields:[
+      {id:"sides",label:"الوجه",type:"select",def:"1",opts:[["وجه واحد","1"],["وجهين","2"]]},
+      {id:"size",label:"المقاس",type:"select",def:"A3+",opts:[
+        ["25×35","0.575"],
+        ["A3+","1.15"],
+        ["70×33","1.725"],
+        ["100×33","2.30"]
+      ]},
+      {id:"unit",label:"سعر الوحدة (ج.م)",type:"num",def:"0"}
+    ]},
+    "binding":{name:"تجليد",unit:"كتاب",tiers:[[Infinity,1]],setup:0,fields:[
+      {id:"unit",label:"سعر الوحدة (ج.م)",type:"num",def:"0"}
+    ]},
+    "staple":{name:"دبوس",unit:"كتيب",tiers:[[Infinity,1]],setup:0,fields:[
+      {id:"unit",label:"سعر الوحدة (ج.م)",type:"num",def:"0"}
+    ]},
+    "spot-uv":{name:"Spot UV",unit:"ورقة",tiers:[[Infinity,1]],setup:0,fields:[
+      {id:"unit",label:"سعر الوحدة (ج.م)",type:"num",def:"0"}
+    ]},
+    "cutting":{name:"القص",unit:"فرخ",tiers:[[Infinity,1]],setup:0,fields:[
+      {id:"unit",label:"سعر الوحدة (ج.م)",type:"num",def:"0"}
+    ]},
+    "die":{name:"بصمة",unit:"قطعة",tiers:[[Infinity,1]],setup:0,fields:[
+      {id:"unit",label:"سعر الوحدة (ج.م)",type:"num",def:"0"}
+    ]},
+    "boxing":{name:"تكعيب",unit:"علبة",tiers:[[Infinity,1]],setup:0,fields:[
+      {id:"unit",label:"سعر الوحدة (ج.م)",type:"num",def:"0"}
+    ]},
+    "binding-cover":{name:"تجليد بشر",unit:"نسخة",tiers:[[Infinity,1]],setup:0,fields:[
+      {id:"unit",label:"سعر الوحدة (ج.م)",type:"num",def:"0"}
+    ]},
+    "wire-binding":{name:"تقفيل سلك",unit:"نسخة",tiers:[[Infinity,1]],setup:0,fields:[
+      {id:"unit",label:"سعر الوحدة (ج.م)",type:"num",def:"0"}
+    ]},
+    "thread-binding":{name:"تجليد خيط وبشر",unit:"نسخة",tiers:[[Infinity,1]],setup:0,fields:[
+      {id:"unit",label:"سعر الوحدة (ج.م)",type:"num",def:"0"}
+    ]},
+    "hard-cover":{name:"هارد كافر",unit:"نسخة",tiers:[[Infinity,1]],setup:0,fields:[
+      {id:"unit",label:"سعر الوحدة (ج.م)",type:"num",def:"0"}
+    ]},
+    "soft-cover":{name:"سوفت كافر",unit:"نسخة",tiers:[[Infinity,1]],setup:0,fields:[
+      {id:"unit",label:"سعر الوحدة (ج.م)",type:"num",def:"0"}
+    ]},
+    "slitting":{name:"تشريح",unit:"ورقة",tiers:[[Infinity,1]],setup:0,fields:[
+      {id:"unit",label:"سعر الوحدة (ج.م)",type:"num",def:"0"}
+    ]},
+    "creasing":{name:"تكسير",unit:"ورقة",tiers:[[Infinity,1]],setup:0,fields:[
+      {id:"unit",label:"سعر الوحدة (ج.م)",type:"num",def:"0"}
+    ]},
+    "kafraj":{name:"كفراج",unit:"نسخة",tiers:[[Infinity,1]],setup:0,fields:[
+      {id:"unit",label:"سعر الوحدة (ج.م)",type:"num",def:"0"}
+    ]},
+    "dargala":{name:"درقله",unit:"نسخة",tiers:[[Infinity,1]],setup:0,fields:[
+      {id:"unit",label:"سعر الوحدة (ج.م)",type:"num",def:"0"}
+    ]},
+    "scent":{name:"ريحة",unit:"ورقة",tiers:[[Infinity,1]],setup:0,fields:[
+      {id:"unit",label:"سعر الوحدة (ج.م)",type:"num",def:"0"}
+    ]},
+    "offset-full":{name:"أوفست فرخ كامل",unit:"فرخ",tiers:[[1000,1.2],[5000,0.9],[Infinity,0.7]],setup:250,fields:[
+      {id:"weight",label:"وزن الورق",type:"select",def:"150",opts:[["80 جم",0.85],["120 جم",0.95],["150 جم",1],["200 جم",1.15]]},
+      {id:"sides",label:"الطباعة",type:"select",def:"1",opts:[["وجه واحد",1],["وجهين",1.7]]}
+    ]},
+    "offset-half":{name:"أوفست نصف فرخ",unit:"فرخ",tiers:[[1000,0.8],[5000,0.6],[Infinity,0.45]],setup:180,fields:[
+      {id:"weight",label:"وزن الورق",type:"select",def:"150",opts:[["80 جم",0.85],["120 جم",0.95],["150 جم",1],["200 جم",1.15]]},
+      {id:"sides",label:"الطباعة",type:"select",def:"1",opts:[["وجه واحد",1],["وجهين",1.7]]}
+    ]},
+    "custom":{name:"خدمة مخصصة",unit:"وحدة",tiers:[[Infinity,1]],setup:0,fields:[
+      {id:"desc",label:"وصف الخدمة",type:"text",def:""},
+      {id:"unit",label:"سعر الوحدة (ج.م)",type:"num",def:"100"}
+    ]}
+  }
+};
+
+const S = CATALOG.services;
+let currentTab = "digital";
+let currentSvc = "kuchya";
+let invoiceItems = [];
+
+function renderTabs() {
+  const bar = document.getElementById("tab-bar");
+  bar.innerHTML = CATALOG.tabs.map(t =>
+    `<button class="tab-btn${t.id===currentTab?' active':''}" onclick="switchTab('${t.id}')">${t.label}</button>`
+  ).join("");
+}
+function renderServices() {
+  const tab = CATALOG.tabs.find(t=>t.id===currentTab);
+  if (!tab || tab.special) return;
+  const list = document.getElementById("svc-list");
+  list.innerHTML = '<div class="lbl">الخدمات</div>' +
+    tab.services.map(s =>
+      `<div class="svc-item${s===currentSvc?' active':''}" onclick="selectSvc('${s}')"><span class="dot"></span>${S[s].name}</div>`
+    ).join("");
+}
+function switchTab(tab) {
+  currentTab = tab;
+  const tabData = CATALOG.tabs.find(t=>t.id===tab);
+  if (tabData && tabData.special) {
+    document.getElementById('work-area').style.display = 'none';
+    document.getElementById('special-area').style.display = 'block';
+    renderSpecialTab(tab);
+  } else {
+    document.getElementById('work-area').style.display = 'flex';
+    document.getElementById('special-area').style.display = 'none';
+    currentSvc = tabData.services[0];
+    renderServices();
+    renderForm();
+  }
+  renderTabs();
+}
+function selectSvc(svc) {
+  currentSvc = svc;
+  renderServices();
+  renderForm();
+}
+
+function getTierPrice(tiers, qty) {
+  for (const [upTo, price] of tiers) {
+    if (qty <= upTo) return price;
+  }
+  return tiers[tiers.length-1][1];
+}
+
+function renderForm() {
+  const svc = S[currentSvc];
+  document.getElementById("svc-title").textContent = svc.name;
+  document.getElementById("svc-unit").textContent = svc.unit ? `(${svc.unit})` : '';
+  const fields = svc.fields || [];
+  const container = document.getElementById("form-fields");
+  container.innerHTML = fields.map(f => {
+    let html = '';
+    if (f.type === 'select' && f.id === 'type' && currentSvc === 'business-card') {
+      const opts = (f.opts||[]).map(([l,v]) =>
+        `<option value="${v}" data-price="${v}"${String(v)===String(f.def)?' selected':''}>${l}</option>`
+      ).join('');
+      html = `<div class="fld"><label>${f.label}</label><select id="fld-${f.id}" onchange="document.getElementById('fld-unit').value=this.value;calcPrice()">${opts}</select></div>`;
+    } else if (f.type === 'select' && (f.id === 'size' || f.id === 'sides') && currentSvc === 'cellophane-svc') {
+      const opts = (f.opts||[]).map(([l,v]) =>
+        `<option value="${v}"${String(v)===String(f.def)?' selected':''}>${l}</option>`
+      ).join('');
+      html = `<div class="fld"><label>${f.label}</label><select id="fld-${f.id}" onchange="updateCellophaneUnit();calcPrice()">${opts}</select></div>`;
+    } else if (f.type === 'select') {
+      const opts = (f.opts||[]).map(([l,v]) =>
+        `<option value="${v}"${String(v)===String(f.def)?' selected':''}>${l}</option>`
+      ).join('');
+      html = `<div class="fld"><label>${f.label}</label><select id="fld-${f.id}" onchange="calcPrice()">${opts}</select></div>`;
+    } else if (f.type === 'weight') {
+      const opts = (f.opts||[]).map(([l,v]) =>
+        `<option value="${v}"${String(v)===String(f.def)?' selected':''}>${l}</option>`
+      ).join('');
+      html = `<div class="fld"><label>${f.label}</label><select id="fld-${f.id}" onchange="calcPrice()">${opts}</select></div>`;
+    } else if (f.type === 'size') {
+      const opts = (f.opts||[]).map(([l,v]) =>
+        `<option value="${v}"${String(v)===String(f.def)?' selected':''}>${l}</option>`
+      ).join('');
+      html = `<div class="fld"><label>${f.label}</label><select id="fld-${f.id}" onchange="calcPrice()">${opts}</select></div>`;
+    } else if (f.type === 'weight') {
+      const opts = (f.opts||[]).map(([l,v]) =>
+        `<option value="${v}"${String(v)===String(f.def)?' selected':''}>${l}</option>`
+      ).join('');
+      html = `<div class="fld"><label>${f.label}</label><select id="fld-${f.id}" onchange="calcPrice()">${opts}</select></div>`;
+    } else if (f.type === 'kuchya-size') {
+      const opts = (f.opts||[]).map(([l,v]) =>
+        `<option value='${v}'${String(v)===String(f.def)?' selected':''}>${l}</option>`
+      ).join('');
+      html = `<div class="fld"><label>${f.label}</label><select id="fld-${f.id}" onchange="calcPrice()">${opts}</select></div>`;
+    } else if (f.type === 'cellophane') {
+      const opts = (f.opts||[]).map(([l,v]) =>
+        `<option value="${v}"${String(v)===String(f.def)?' selected':''}>${l}</option>`
+      ).join('');
+      html = `<div class="fld"><label>${f.label}</label><select id="fld-${f.id}" onchange="calcPrice()">${opts}</select></div>`;
+    } else if (f.type === 'check') {
+      const chks = (f.opts||[]).map(([val,lbl,price]) =>
+        `<label class="${String(f.def||[]).includes(val)?'checked':''}"><input type="checkbox" value="${val}" data-price="${price}" ${String(f.def||[]).includes(val)?'checked':''} onchange="toggleCheck(this,'${f.id}');calcPrice()"> ${lbl} ${price?'(+'+price+' ج.م)':''}</label>`
+      ).join('');
+      html = `<div class="fld"><label>${f.label}</label><div class="chk-group" id="fld-${f.id}">${chks}</div></div>`;
+    } else if (f.type === 'text') {
+      html = `<div class="fld"><label>${f.label}</label><input type="text" id="fld-${f.id}" value="${f.def||''}" placeholder="${f.label}" oninput="calcPrice()"></div>`;
+    } else if (f.type === 'num') {
+      html = `<div class="fld"><label>${f.label}</label><input type="number" id="fld-${f.id}" value="${f.def||'0'}" min="0" oninput="calcPrice()"></div>`;
+    }
+    return html;
+  }).join('');
+
+  // quantity field always shown
+  container.innerHTML += `
+    <div class="row">
+      <div class="fld"><label>الكمية</label><input type="number" id="fld-qty" value="1" min="1" oninput="calcPrice()"></div>
+      ${fields.some(f=>f.type==='select'||f.type==='size'||f.type==='kuchya-size')?'<div class="fld"></div>':''}
+    </div>
+  `;
+
+  // initial calculation
+  setTimeout(calcPrice, 50);
+
+  // auto-set unit price from type selector for business-card
+  if (currentSvc === 'business-card') {
+    const sel = document.getElementById('fld-type');
+    const unit = document.getElementById('fld-unit');
+    if (sel && unit) unit.value = sel.value;
+  }
+  // auto-set unit price from size and sides for cellophane
+  if (currentSvc === 'cellophane-svc') updateCellophaneUnit();
+}
+
+function updateCellophaneUnit() {
+  const sizeEl = document.getElementById('fld-size');
+  const sidesEl = document.getElementById('fld-sides');
+  const unitEl = document.getElementById('fld-unit');
+  if (sizeEl && sidesEl && unitEl) {
+    const perSide = parseFloat(sizeEl.value) || 0;
+    const sides = parseFloat(sidesEl.value) || 1;
+    unitEl.value = (perSide * sides).toFixed(3);
+  }
+}
+
+function toggleCheck(el) {
+  el.parentElement.classList.toggle('checked', el.checked);
+}
+
+function getFieldValues() {
+  const svc = S[currentSvc];
+  const vals = {};
+  (svc.fields||[]).forEach(f => {
+    const el = document.getElementById(`fld-${f.id}`);
+    if (!el) return;
+    if (f.type === 'select') vals[f.id] = el.value;
+    else if (f.type === 'size') {
+      vals[f.id] = el.value;
+      vals[f.id+'_area'] = parseFloat(el.options[el.selectedIndex]?.dataset?.area) || 1;
+    } else if (f.type === 'weight') {
+      vals[f.id] = el.value;
+    } else if (f.type === 'kuchya-size') {
+      try {
+        const data = JSON.parse(el.value);
+        vals.size_data = data;
+        vals.size_label = el.options[el.selectedIndex]?.textContent || '';
+      } catch(e) {
+        vals.size_data = {1:[[Infinity,1]],2:[[Infinity,1]],area:1};
+        vals.size_label = '';
+      }
+      vals[f.id] = el.value;
+    } else if (f.type === 'check') {
+      vals[f.id] = Array.from(el.querySelectorAll('input:checked')).map(i=>i.value);
+    } else if (f.type === 'text') vals[f.id] = el.value;
+    else if (f.type === 'num') vals[f.id] = parseFloat(el.value) || 0;
+    else if (f.type === 'cellophane') vals[f.id] = el.value;
+  });
+  return vals;
+}
+
+function calcPrice() {
+  const svc = S[currentSvc];
+  const qty = parseInt(document.getElementById("fld-qty")?.value) || 1;
+  const vals = getFieldValues();
+
+  let unit = getTierPrice(svc.tiers, qty);
+  if (svc.fields?.some(f => f.id === 'unit')) unit = Number(vals.unit) || 0;
+
+  // per-size tiers for kuchya
+  if (currentSvc === 'kuchya' && vals.size_data) {
+    const key = vals.sides || '1';
+    const tiers = vals.size_data[key];
+    if (tiers) unit = getTierPrice(tiers, qty);
+  }
+
+  let multiplier = 1;
+  let addonsTotal = 0;
+  let unitAddons = 0;
+
+  (svc.fields||[]).forEach(f => {
+    const v = vals[f.id];
+    if (f.type === 'select' && f.id !== 'type' && f.id !== 'sides' && !(currentSvc === 'cellophane-svc' && f.id === 'size')) {
+      multiplier *= parseFloat(v) || 1;
+    } else if (f.type === 'weight') {
+      const extra = parseFloat(v) || 0;
+      unitAddons += extra * (vals.size_data?.area || 1);
+    } else if (f.type === 'cellophane') {
+      if (currentSvc === 'kuchya' && vals.size_data) {
+        const sides = parseFloat(v) || 0;
+        if (sides > 0) unitAddons += vals.size_data.lam * sides;
+      }
+    } else if (f.type === 'check' && Array.isArray(v)) {
+      v.forEach(selected => {
+        const opt = (f.opts||[]).find(o => o[0] === selected);
+        if (opt && opt[2]) addonsTotal += opt[2];
+      });
+    }
+  });
+
+  const unitPrice = unit * multiplier + unitAddons;
+  const subtotal = unitPrice * qty;
+  const setup = svc.setup || 0;
+  const total = subtotal + addonsTotal + setup;
+
+  const fmt = n => n.toFixed(2) + ' ج.م';
+
+  document.getElementById("brk-unit").textContent = fmt(unitPrice);
+  document.getElementById("brk-subtotal").textContent = fmt(subtotal);
+
+  const addonsRow = document.getElementById("brk-addons-row");
+  if (addonsTotal > 0) {
+    addonsRow.style.display = 'flex';
+    document.getElementById("brk-addons").textContent = fmt(addonsTotal);
+  } else {
+    addonsRow.style.display = 'none';
+  }
+
+  const setupRow = document.getElementById("brk-setup-row");
+  if (setup > 0) {
+    setupRow.style.display = 'flex';
+    document.getElementById("brk-setup").textContent = fmt(setup);
+  } else {
+    setupRow.style.display = 'none';
+  }
+
+  document.getElementById("total-price").textContent = fmt(total);
+}
+
+function addToInvoice() {
+  const svc = S[currentSvc];
+  const qty = parseInt(document.getElementById("fld-qty")?.value) || 1;
+  const vals = getFieldValues();
+
+  let unit = getTierPrice(svc.tiers, qty);
+  if (svc.fields?.some(f => f.id === 'unit')) unit = Number(vals.unit) || 0;
+
+  // per-size tiers for kuchya
+  if (currentSvc === 'kuchya' && vals.size_data) {
+    const key = vals.sides || '1';
+    const tiers = vals.size_data[key];
+    if (tiers) unit = getTierPrice(tiers, qty);
+  }
+
+  let multiplier = 1;
+  let addonsTotal = 0;
+  let unitAddons = 0;
+  const descParts = [];
+
+  (svc.fields||[]).forEach(f => {
+    const v = vals[f.id];
+    if (f.type === 'select') {
+      if (f.id !== 'type' && f.id !== 'sides' && !(currentSvc === 'cellophane-svc' && f.id === 'size')) {
+        const m = parseFloat(v) || 1;
+        multiplier *= m;
+      }
+      const opt = (f.opts||[]).find(o => String(o[1]) === v || String(o[0]) === v);
+      descParts.push(opt ? opt[0] : v);
+    } else if (f.type === 'weight') {
+      const extra = parseFloat(v) || 0;
+      unitAddons += extra * (vals.size_data?.area || 1);
+      const opt = (f.opts||[]).find(o => String(o[1]) === String(v));
+      if (opt) descParts.push(opt[0]);
+    } else if (f.type === 'cellophane') {
+      if (currentSvc === 'kuchya' && vals.size_data) {
+        const sides = parseFloat(v) || 0;
+        if (sides > 0) {
+          unitAddons += vals.size_data.lam * sides;
+          const opt = (f.opts||[]).find(o => String(o[1]) === String(v));
+          if (opt) descParts.push('سلوفان ' + opt[0]);
+        }
+      }
+    } else if (f.type === 'kuchya-size') {
+      if (vals.size_label) descParts.push(vals.size_label);
+    } else if (f.type === 'size') {
+    } else if (f.type === 'check' && Array.isArray(v)) {
+      v.forEach(selected => {
+        const opt = (f.opts||[]).find(o => o[0] === selected);
+        if (opt) {
+          descParts.push(opt[0]);
+          if (opt[2]) addonsTotal += opt[2];
+        }
+      });
+    } else if (f.type === 'text' && v) {
+      descParts.unshift(String(v));
+    } else if (f.type === 'num') {
+    }
+  });
+
+  const unitPrice = unit * multiplier + unitAddons;
+  const subtotal = unitPrice * qty;
+  const setup = svc.setup || 0;
+  const total = subtotal + addonsTotal + setup;
+
+  const desc = svc.name + (descParts.length ? ' — ' + descParts.join('، ') : '');
+
+  const id = Date.now() + '_' + Math.random().toString(36).slice(2,6);
+  invoiceItems.push({ id, desc, qty, unitPrice: unitPrice, addonsTotal, setup, total });
+  renderInvoice();
+  calcPrice();
+}
+
+function renderInvoice() {
+  const body = document.getElementById("inv-body");
+  const empty = document.getElementById("inv-empty");
+  if (invoiceItems.length === 0) {
+    body.innerHTML = '';
+    empty.style.display = 'flex';
+    updateTotals();
+    return;
+  }
+  empty.style.display = 'none';
+  body.innerHTML = invoiceItems.map((it,i) =>
+    `<tr><td>${it.desc}</td><td>${it.qty}</td><td>${it.unitPrice.toFixed(2)} ج.م</td><td style="display:flex;align-items:center;justify-content:center;gap:4px;">${it.total.toFixed(2)} ج.م<button onclick="removeItem(${i})" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:11px;"><i class="fas fa-times"></i></button></td></tr>`
+  ).join('');
+  updateTotals();
+}
+function removeItem(i) { invoiceItems.splice(i,1); renderInvoice(); }
+function clearInvoice() { if(invoiceItems.length) { invoiceItems=[]; renderInvoice(); } }
+
+function updateTotals() {
+  const subtotal = invoiceItems.reduce((s,i) => s + i.total, 0);
+  const setupTotal = invoiceItems.reduce((s,i) => s + (i.setup||0), 0);
+  const discPct = parseFloat(document.getElementById("disc-pct").value) || 0;
+  const discAmt = parseFloat(document.getElementById("disc-amt").value) || 0;
+  const discVal = Math.max(0, subtotal * (discPct/100) + discAmt);
+  const grand = Math.max(0, subtotal - discVal);
+  const fmt = n => n.toFixed(2) + ' ج.م';
+  document.getElementById("subtotal-v").textContent = fmt(subtotal);
+  document.getElementById("setup-total-v").textContent = fmt(setupTotal);
+  document.getElementById("grand-total-v").textContent = fmt(grand);
+}
+
+function printInvoice() {
+  if (!invoiceItems.length) return;
+  const name = document.getElementById("client-name").value || '—';
+  const phone = document.getElementById("client-phone").value || '—';
+  const subtotal = invoiceItems.reduce((s,i)=>s+i.total,0);
+  const discPct = parseFloat(document.getElementById("disc-pct").value)||0;
+  const discAmt = parseFloat(document.getElementById("disc-amt").value)||0;
+  const discVal = Math.max(0, subtotal*(discPct/100)+discAmt);
+  const grand = Math.max(0, subtotal-discVal);
+  const rows = invoiceItems.map(i => `<tr><td style="padding:6px 10px;border-bottom:1px solid #ddd;text-align:right;">${i.desc}</td><td style="padding:6px 10px;border-bottom:1px solid #ddd;text-align:center;">${i.qty}</td><td style="padding:6px 10px;border-bottom:1px solid #ddd;text-align:center;font-family:monospace;">${i.unitPrice.toFixed(2)} ج.م</td><td style="padding:6px 10px;border-bottom:1px solid #ddd;text-align:center;font-family:monospace;font-weight:bold;">${i.total.toFixed(2)} ج.م</td></tr>`).join('');
+  const w = window.open('','_blank');
+  w.document.write(`<html dir="rtl"><head><meta charset="UTF-8"><title>Digital Screen - فاتورة</title><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;800;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet"><style>body{font-family:Cairo,sans-serif;padding:30px;background:#fff;color:#222;}h1{font-size:22px;margin:0 0 2px;}h2{font-size:13px;color:#888;font-weight:400;margin-bottom:16px;}.info{display:flex;justify-content:space-between;margin-bottom:20px;padding:10px 14px;background:#f8f9fc;border-radius:8px;font-size:12px;}table{width:100%;border-collapse:collapse;margin-bottom:16px;}th{background:#f97316;color:#fff;padding:8px 10px;font-size:12px;text-align:center;}th:first-child{text-align:right;}td{font-size:12px;}.tots{display:flex;flex-direction:column;gap:5px;padding:14px;background:#f8f9fc;border-radius:8px;}.tots .r{display:flex;justify-content:space-between;width:100%;font-size:13px;}.tots .g{font-size:18px;font-weight:900;color:#f97316;}.ft{margin-top:24px;padding-top:16px;border-top:2px solid #f97316;text-align:center;font-size:11px;color:#aaa;}.badge{display:inline-block;padding:2px 10px;background:#fef2f2;color:#dc2626;border-radius:50px;font-size:10px;font-weight:700;}</style></head><body><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><div><h1>Digital Screen</h1><h2>CTP &amp; Digital &amp; Offset Printing</h2></div><div style="text-align:left;direction:ltr;"><span class="badge"><i class="fas fa-print"></i> INVOICE</span></div></div><div class="info"><span><strong>العميل:</strong> ${name}</span><span><strong>التليفون:</strong> ${phone}</span><span><strong>التاريخ:</strong> ${new Date().toLocaleDateString('ar-EG')}</span></div><table><thead><tr><th>الوصف</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th></tr></thead><tbody>${rows}</tbody></table><div class="tots"><div class="r"><span>المجموع الفرعي</span><span style="font-family:monospace;">${subtotal.toFixed(2)} ج.م</span></div><div class="r"><span>الخصم</span><span style="font-family:monospace;color:#ef4444;">-${discVal.toFixed(2)} ج.م</span></div><div class="r g"><span>الإجمالي</span><span style="font-family:monospace;">${grand.toFixed(2)} ج.م</span></div></div><div class="ft"><i class="fas fa-print"></i> Digital Screen — جميع الأسعار شاملة ضريبة القيمة المضافة <i class="fas fa-print"></i></div></body></html>`);
+  w.document.close(); w.focus(); w.print();
+}
+
+// ===== Google Drive Integration =====
+let gdriveToken = null;
+
+function saveDriveConfig() {
+  const id = document.getElementById('gdrive-client-id').value.trim();
+  if (!id) { setDriveStatus('من فضلك أدخل Client ID', 'red'); return; }
+  localStorage.setItem('ds_drive_client_id', id);
+  setDriveStatus('تم حفظ Client ID', 'green');
+  document.getElementById('drive-actions').style.display = 'flex';
+}
+
+function loadDriveConfig() {
+  const id = localStorage.getItem('ds_drive_client_id');
+  if (id) {
+    document.getElementById('gdrive-client-id').value = id;
+    document.getElementById('drive-actions').style.display = 'flex';
+    checkDriveAuth();
+  }
+}
+
+function setDriveStatus(msg, color) {
+  const el = document.getElementById('drive-status');
+  if (el) { el.textContent = msg; if (color) el.style.color = color; }
+}
+
+function authDrive() {
+  const clientId = localStorage.getItem('ds_drive_client_id');
+  if (!clientId) { setDriveStatus('أدخل Client ID أولاً', 'red'); return; }
+  
+  try {
+    const client = google.accounts.oauth2.initTokenClient({
+      client_id: clientId,
+      scope: 'https://www.googleapis.com/auth/drive.file',
+      callback: (response) => {
+        if (response.error) {
+          setDriveStatus('خطأ في تسجيل الدخول: ' + response.error, 'red');
+          return;
+        }
+        gdriveToken = response.access_token;
+        localStorage.setItem('ds_drive_token', gdriveToken);
+        setDriveStatus('✓ تم تسجيل الدخول', 'green');
+        document.getElementById('drive-save-btn').style.display = 'inline-block';
+        document.getElementById('drive-load-btn').style.display = 'inline-block';
+      },
+    });
+    client.requestAccessToken();
+  } catch(e) {
+    setDriveStatus('خطأ: ' + e.message, 'red');
+  }
+}
+
+function checkDriveAuth() {
+  const token = localStorage.getItem('ds_drive_token');
+  if (token) {
+    gdriveToken = token;
+    setDriveStatus('✓ تم تسجيل الدخول', 'green');
+    document.getElementById('drive-save-btn').style.display = 'inline-block';
+    document.getElementById('drive-load-btn').style.display = 'inline-block';
+  }
+}
+
+async function getOrCreateDriveFolder() {
+  const resp = await fetch('https://www.googleapis.com/drive/v3/files?q=name%3D%27DigitalScreenInvoices%27%20and%20mimeType%3D%27application%2Fvnd.google-apps.folder%27%20and%20trashed%3Dfalse&fields=files(id,name)', {
+    headers: { Authorization: 'Bearer ' + gdriveToken }
+  });
+  const data = await resp.json();
+  if (data.files && data.files.length > 0) return data.files[0].id;
+  
+  const createResp = await fetch('https://www.googleapis.com/drive/v3/files', {
+    method: 'POST',
+    headers: { Authorization: 'Bearer ' + gdriveToken, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: 'DigitalScreenInvoices', mimeType: 'application/vnd.google-apps.folder' })
+  });
+  const created = await createResp.json();
+  return created.id;
+}
+
+async function saveToDrive() {
+  if (!gdriveToken) { setDriveStatus('سجل الدخول أولاً', 'red'); return; }
+  
+  setDriveStatus('جاري الحفظ...', '');
+  try {
+    const folderId = await getOrCreateDriveFolder();
+    const backup = {
+      version: 2,
+      exportedAt: new Date().toISOString(),
+      ds_customers: JSON.parse(localStorage.getItem('ds_customers')||'[]'),
+      ds_invoices: JSON.parse(localStorage.getItem('ds_invoices')||'[]'),
+      ds_next_serial: parseInt(localStorage.getItem('ds_next_serial')||'1'),
+      ds_next_cust_code: parseInt(localStorage.getItem('ds_next_cust_code')||'1'),
+    };
+    
+    const searchResp = await fetch(`https://www.googleapis.com/drive/v3/files?q=name%3D%27invoices.json%27%20and%20%27${folderId}%27%20in%20parents%20and%20trashed%3Dfalse&fields=files(id,name)`, {
+      headers: { Authorization: 'Bearer ' + gdriveToken }
+    });
+    const searchData = await searchResp.json();
+    
+    const content = JSON.stringify(backup, null, 2);
+    const boundary = 'ds_boundary_42';
+    const body = `--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify({ name: 'invoices.json', parents: [folderId] })}\r\n--${boundary}\r\nContent-Type: application/json\r\n\r\n${content}\r\n--${boundary}--`;
+    
+    if (searchData.files && searchData.files.length > 0) {
+      const fid = searchData.files[0].id;
+      await fetch(`https://www.googleapis.com/upload/drive/v3/files/${fid}?uploadType=multipart`, {
+        method: 'PATCH',
+        headers: { Authorization: 'Bearer ' + gdriveToken, 'Content-Type': 'multipart/related; boundary=' + boundary },
+        body: body
+      });
+      localStorage.setItem('ds_drive_file_id', fid);
+      setDriveStatus('✓ تم التحديث على Drive', 'green');
+    } else {
+      const resp = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + gdriveToken, 'Content-Type': 'multipart/related; boundary=' + boundary },
+        body: body
+      });
+      const result = await resp.json();
+      localStorage.setItem('ds_drive_file_id', result.id);
+      setDriveStatus('✓ تم الحفظ على Drive', 'green');
+    }
+  } catch(e) {
+    setDriveStatus('خطأ في الحفظ: ' + e.message, 'red');
+  }
+}
+
+async function loadFromDrive() {
+  if (!gdriveToken) { setDriveStatus('سجل الدخول أولاً', 'red'); return; }
+  
+  setDriveStatus('جاري التحميل...', '');
+  try {
+    const folderId = await getOrCreateDriveFolder();
+    const searchResp = await fetch(`https://www.googleapis.com/drive/v3/files?q=name%3D%27invoices.json%27%20and%20%27${folderId}%27%20in%20parents%20and%20trashed%3Dfalse&fields=files(id,name)`, {
+      headers: { Authorization: 'Bearer ' + gdriveToken }
+    });
+    const searchData = await searchResp.json();
+    
+    if (!searchData.files || !searchData.files.length) {
+      setDriveStatus('لا توجد بيانات على Drive', 'red'); return;
+    }
+    
+    const resp = await fetch(`https://www.googleapis.com/drive/v3/files/${searchData.files[0].id}?alt=media`, {
+      headers: { Authorization: 'Bearer ' + gdriveToken }
+    });
+    const backup = await resp.json();
+    
+    if (backup.ds_invoices && Array.isArray(backup.ds_invoices)) {
+      localStorage.setItem('ds_invoices', JSON.stringify(backup.ds_invoices));
+    }
+    if (backup.ds_customers && Array.isArray(backup.ds_customers)) {
+      localStorage.setItem('ds_customers', JSON.stringify(backup.ds_customers));
+    }
+    if (backup.ds_next_serial) {
+      localStorage.setItem('ds_next_serial', String(backup.ds_next_serial));
+    }
+    if (backup.ds_next_cust_code) {
+      localStorage.setItem('ds_next_cust_code', String(backup.ds_next_cust_code));
+    }
+    
+    const active = (backup.ds_invoices||[]).filter(i => i.status === 'active');
+    if (active.length > 0) {
+      const last = active[active.length - 1];
+      if (last.items) {
+        invoiceItems.length = 0;
+        last.items.forEach(i => invoiceItems.push(i));
+        document.getElementById('client-name').value = last.customerName || '';
+        document.getElementById('client-phone').value = last.customerPhone || '';
+        if (last.discPct !== undefined) document.getElementById('disc-pct').value = last.discPct;
+        if (last.discAmt !== undefined) document.getElementById('disc-amt').value = last.discAmt;
+        renderInvoice();
+        updateTotals();
+      }
+    }
+    setDriveStatus('✓ تم استعادة جميع البيانات من Drive', 'green');
+  } catch(e) {
+    setDriveStatus('خطأ في التحميل: ' + e.message, 'red');
+  }
+}
+
+loadDriveConfig();
+
+// ===== Customers & Invoices System =====
+function db() {
+  return {
+    customers: JSON.parse(localStorage.getItem('ds_customers')||'[]'),
+    invoices: JSON.parse(localStorage.getItem('ds_invoices')||'[]'),
+    nextSerial: parseInt(localStorage.getItem('ds_next_serial')||'1'),
+    nextCustCode: parseInt(localStorage.getItem('ds_next_cust_code')||'1'),
+    adminPwd: localStorage.getItem('ds_admin_pwd')||'',
+  };
+}
+function dbSave(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+
+function genId() { return Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,6); }
+
+function renderSpecialTab(tab) {
+  const area = document.getElementById('special-area');
+  if (tab === 'customers') renderCustomersTab(area);
+  else if (tab === 'invoices') renderInvoicesTab(area, 'active');
+  else if (tab === 'deleted') renderInvoicesTab(area, 'deleted');
+}
+
+// ===== Customers Tab =====
+function renderCustomersTab(area) {
+  const data = db();
+  area.innerHTML = `
+    <div class="sp-card">
+      <h3><i class="fas fa-user-plus"></i> إضافة عميل جديد</h3>
+      <div class="sp-grid">
+        <div class="fld"><label>الاسم</label><input type="text" id="cust-name" placeholder="اسم العميل"></div>
+        <div class="fld"><label>التليفون</label><input type="text" id="cust-phone" placeholder="رقم التليفون"></div>
+        <div class="fld" style="grid-column:span 2"><label>البريد الإلكتروني</label><input type="email" id="cust-email" placeholder="example@email.com"></div>
+      </div>
+      <button class="btn btn-orange btn-full" onclick="addCustomer()"><i class="fas fa-save"></i> حفظ العميل</button>
+    </div>
+    <div class="sp-card" style="margin-top:14px">
+      <h3><i class="fas fa-users"></i> جميع العملاء (${data.customers.length})</h3>
+      <div style="margin-bottom:8px"><input type="text" id="cust-search" placeholder="بحث بالاسم أو الكود أو التليفون..." oninput="filterCustomers()" style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 10px;color:var(--text);font-size:11px;width:250px;"></div>
+      <div class="sp-table-wrap"><table class="sp-table"><thead><tr><th>الكود</th><th>الاسم</th><th>التليفون</th><th>البريد</th><th>الإجراءات</th></tr></thead><tbody id="cust-body"></tbody></table></div>
+    </div>
+  `;
+  renderCustomerList(data.customers);
+}
+
+function renderCustomerList(list) {
+  const body = document.getElementById('cust-body');
+  if (!body) return;
+  if (!list.length) { body.innerHTML = '<tr><td colspan="5"><div class="sp-empty"><i class="fas fa-users"></i><br>لا يوجد عملاء</div></td></tr>'; return; }
+  body.innerHTML = list.map((c,i) => `
+    <tr>
+      <td><span class="serial">${c.code||'C' + String(i+1).padStart(3,'0')}</span></td>
+      <td>${c.name}</td>
+      <td>${c.phone||'—'}</td>
+      <td>${c.email||'—'}</td>
+      <td><div class="sp-actions"><button onclick="deleteCustomer('${c.id}')" class="btn-del"><i class="fas fa-trash-alt"></i></button></div></td>
+    </tr>
+  `).join('');
+}
+
+function filterCustomers() {
+  const q = document.getElementById('cust-search').value.trim().toLowerCase();
+  const data = db();
+  const filtered = q ? data.customers.filter(c => 
+    c.name.toLowerCase().includes(q) || 
+    (c.phone||'').includes(q) || 
+    (c.code||'').toLowerCase().includes(q)
+  ) : data.customers;
+  renderCustomerList(filtered);
+}
+
+function addCustomer() {
+  const name = document.getElementById('cust-name').value.trim();
+  const phone = document.getElementById('cust-phone').value.trim();
+  const email = document.getElementById('cust-email').value.trim();
+  if (!name) { alert('من فضلك أدخل اسم العميل'); return; }
+  const data = db();
+  const code = 'C' + String(data.nextCustCode).padStart(3,'0');
+  data.customers.push({ id:genId(), code, name, phone, email, createdAt:new Date().toISOString() });
+  data.nextCustCode++;
+  dbSave('ds_customers', data.customers);
+  dbSave('ds_next_cust_code', data.nextCustCode);
+  renderCustomersTab(document.getElementById('special-area'));
+  alert('تم إضافة العميل ' + name + ' بكود ' + code);
+}
+
+function deleteCustomer(id) {
+  if (!checkAdmin('حذف عميل')) return;
+  const data = db();
+  data.customers = data.customers.filter(c => c.id !== id);
+  dbSave('ds_customers', data.customers);
+  renderCustomerList(data.customers);
+}
+
+// ===== Invoices Tab =====
+function renderInvoicesTab(area, status) {
+  const data = db();
+  const invoices = data.invoices.filter(i => i.status === status);
+  const isDeleted = status === 'deleted';
+  area.innerHTML = `
+    <div class="sp-card">
+      <h3><i class="fas ${isDeleted ? 'fa-trash-alt' : 'fa-file-invoice'}"></i> ${isDeleted ? 'الفواتير المحذوفة' : 'الفواتير'} (${invoices.length})</h3>
+      ${!isDeleted ? `<div class="admin-lock"><i class="fas fa-lock"></i> كلمة المرور للإدارة: <input type="password" id="admin-pwd-input" placeholder="••••"> <button onclick="setAdminPwd()">تعيين</button></div>` : ''}
+      <div class="sp-table-wrap"><table class="sp-table"><thead><tr><th>رقم الفاتورة</th><th>العميل</th><th>التاريخ</th><th>الإجمالي</th><th>الإجراءات</th></tr></thead><tbody id="inv-list-body"></tbody></table></div>
+    </div>
+  `;
+  renderInvoiceList(invoices, isDeleted);
+}
+
+function renderInvoiceList(invoices, isDeleted) {
+  const body = document.getElementById('inv-list-body');
+  if (!body) return;
+  if (!invoices.length) { body.innerHTML = '<tr><td colspan="5"><div class="sp-empty"><i class="fas fa-file-invoice"></i><br>لا توجد فواتير</div></td></tr>'; return; }
+  body.innerHTML = invoices.map(inv => `
+    <tr class="${isDeleted?'del-row':''}">
+      <td><span class="serial">#${String(inv.serial).padStart(4,'0')}</span></td>
+      <td>${inv.customerName || '—'}</td>
+      <td>${new Date(inv.createdAt).toLocaleDateString('ar-EG')}</td>
+      <td style="font-family:'Inter',sans-serif;font-weight:600">${inv.grandTotal.toFixed(2)} ج.م</td>
+      <td><div class="sp-actions">
+        <button onclick="viewInvoice('${inv.id}','${isDeleted}')"><i class="fas fa-eye"></i></button>
+        ${isDeleted
+          ? `<button onclick="restoreInvoice('${inv.id}')" style="border-color:rgba(34,197,55,0.3);color:var(--green)"><i class="fas fa-undo-alt"></i></button>`
+          : `<button onclick="deleteInvoice('${inv.id}')" class="btn-del"><i class="fas fa-trash-alt"></i></button>`
+        }
+      </div></td>
+    </tr>
+  `).join('');
+}
+
+function saveInvoice() {
+  if (!invoiceItems.length) return;
+  const data = db();
+  const subtotal = invoiceItems.reduce((s,i) => s + i.total, 0);
+  const setupTotal = invoiceItems.reduce((s,i) => s + (i.setup||0), 0);
+  const discPct = parseFloat(document.getElementById("disc-pct").value) || 0;
+  const discAmt = parseFloat(document.getElementById("disc-amt").value) || 0;
+  const discVal = Math.max(0, subtotal * (discPct/100) + discAmt);
+  const grandTotal = Math.max(0, subtotal - discVal);
+  
+  const newInv = {
+    id: genId(),
+    serial: data.nextSerial,
+    customerName: document.getElementById("client-name").value || '—',
+    customerPhone: document.getElementById("client-phone").value || '',
+    items: JSON.parse(JSON.stringify(invoiceItems)),
+    discPct, discAmt, grandTotal,
+    status: 'active',
+    createdAt: new Date().toISOString()
+  };
+  data.invoices.push(newInv);
+  data.nextSerial++;
+  dbSave('ds_invoices', data.invoices);
+  dbSave('ds_next_serial', data.nextSerial);
+  alert('✓ تم حفظ الفاتورة رقم #' + String(newInv.serial).padStart(4,'0'));
+}
+
+function checkAdmin(action) {
+  const data = db();
+  if (!data.adminPwd) { 
+    const pwd = prompt('🔐 أنت لم تحددي كلمة مرور للإدارة بعد.\nأدخل كلمة مرور جديدة:');
+    if (!pwd) return false;
+    dbSave('ds_admin_pwd', pwd);
+    return true;
+  }
+  const pwd = prompt('🔐 أدخل كلمة مرور الإدارة لـ ' + action + ':');
+  return pwd === data.adminPwd;
+}
+
+function setAdminPwd() {
+  const pwd = document.getElementById('admin-pwd-input').value.trim();
+  if (!pwd) return;
+  dbSave('ds_admin_pwd', pwd);
+  alert('✓ تم تعيين كلمة مرور الإدارة');
+}
+
+function deleteInvoice(id) {
+  if (!checkAdmin('حذف الفاتورة')) return;
+  const data = db();
+  const inv = data.invoices.find(i => i.id === id);
+  if (inv) { inv.status = 'deleted'; inv.deletedAt = new Date().toISOString(); }
+  dbSave('ds_invoices', data.invoices);
+  renderInvoicesTab(document.getElementById('special-area'), 'active');
+}
+
+function restoreInvoice(id) {
+  if (!checkAdmin('استعادة الفاتورة')) return;
+  const data = db();
+  const inv = data.invoices.find(i => i.id === id);
+  if (inv) { inv.status = 'active'; inv.deletedAt = undefined; }
+  dbSave('ds_invoices', data.invoices);
+  renderInvoicesTab(document.getElementById('special-area'), 'deleted');
+}
+
+function viewInvoice(id, isDeleted) {
+  const data = db();
+  const inv = data.invoices.find(i => i.id === id);
+  if (!inv) return;
+  const w = window.open('', '_blank');
+  const rows = (inv.items||[]).map(i => `<tr><td style="padding:6px 10px;border-bottom:1px solid #ddd;text-align:right;">${i.desc}</td><td style="padding:6px 10px;border-bottom:1px solid #ddd;text-align:center;">${i.qty}</td><td style="padding:6px 10px;border-bottom:1px solid #ddd;text-align:center;font-family:monospace;">${i.unitPrice.toFixed(2)} ج.م</td><td style="padding:6px 10px;border-bottom:1px solid #ddd;text-align:center;font-family:monospace;font-weight:bold;">${i.total.toFixed(2)} ج.م</td></tr>`).join('');
+  w.document.write(`
+    <html dir="rtl"><head><meta charset="UTF-8"><title>فاتورة #${String(inv.serial).padStart(4,'0')}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;800;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>body{font-family:Cairo,sans-serif;padding:30px;background:#fff;color:#222;}h1{font-size:22px;margin:0 0 2px;display:flex;align-items:center;gap:6px;}h1 span{font-size:14px;color:#f97316;font-weight:900;}.sub{font-size:12px;color:#888;margin-bottom:16px;}.info{display:flex;justify-content:space-between;margin-bottom:20px;padding:10px 14px;background:#f8f9fc;border-radius:8px;font-size:12px;}table{width:100%;border-collapse:collapse;margin-bottom:16px;}th{background:#f97316;color:#fff;padding:8px 10px;font-size:12px;text-align:center;}th:first-child{text-align:right;}td{font-size:12px;}.tots{display:flex;flex-direction:column;gap:5px;padding:14px;background:#f8f9fc;border-radius:8px;}.tots .r{display:flex;justify-content:space-between;width:100%;font-size:13px;}.tots .g{font-size:18px;font-weight:900;color:#f97316;}.stamp{position:absolute;top:30px;left:30px;opacity:0.08;font-size:120px;transform:rotate(-15deg);pointer-events:none;}${isDeleted==='true'||isDeleted===true?'body{opacity:0.6;}':''}</style></head><body>
+    <div style="position:relative">
+      <div class="stamp"><i class="fas fa-check-circle"></i></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div><h1>Digital Screen <span>#${String(inv.serial).padStart(4,'0')}</span></h1></div>
+        <div style="text-align:left;direction:ltr;"><span style="display:inline-block;padding:2px 10px;background:#fef2f2;color:#dc2626;border-radius:50px;font-size:10px;font-weight:700;"><i class="fas fa-print"></i> INVOICE</span></div>
+      </div>
+      <div class="info"><span><strong>العميل:</strong> ${inv.customerName||'—'}</span><span><strong>التليفون:</strong> ${inv.customerPhone||'—'}</span><span><strong>التاريخ:</strong> ${new Date(inv.createdAt).toLocaleDateString('ar-EG')}</span></div>
+      <table><thead><tr><th>الوصف</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th></tr></thead><tbody>${rows}</tbody></table>
+      <div class="tots">
+        <div class="r"><span>المجموع الفرعي</span><span>${inv.items.reduce((s,i)=>s+i.total,0).toFixed(2)} ج.م</span></div>
+        ${inv.discPct||inv.discAmt?`<div class="r" style="color:#dc2626"><span>الخصم</span><span>-${((inv.items.reduce((s,i)=>s+i.total,0)*(inv.discPct/100)+Number(inv.discAmt||0))).toFixed(2)} ج.م</span></div>`:''}
+        <div class="r g"><span>الإجمالي</span><span>${inv.grandTotal.toFixed(2)} ج.م</span></div>
+      </div>
+      ${isDeleted==='true'||isDeleted===true?'<div style="margin-top:16px;padding:10px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;text-align:center;color:#dc2626;font-size:12px;font-weight:700;"><i class="fas fa-trash-alt"></i> هذة الفاتورة محذوفة</div>':''}
+      <div class="sub" style="margin-top:20px;text-align:center;">شكراً لتعاملكم — Digital Screen للطباعة</div>
+    </div>
+    </body></html>
+  `);
+  w.document.close(); w.focus();
+}
+
+// ===== Particle Background =====
+(function initParticles() {
+  const canvas = document.getElementById('particle-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  let animId, w, h;
+  const particles = [];
+
+  function resize() {
+    const dpr = window.devicePixelRatio || 1;
+    w = canvas.clientWidth;
+    h = canvas.clientHeight;
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const count = Math.min(60, Math.floor((w * h) / 20000));
+    particles.length = 0;
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: Math.random() * w, y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.25,
+        vy: (Math.random() - 0.5) * 0.25,
+        r: Math.random() * 1.6 + 0.4,
+        hue: Math.random() > 0.5 ? '249,115,22' : '168,85,247'
+      });
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const a = particles[i], b = particles[j];
+        const dx = a.x - b.x, dy = a.y - b.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 120) {
+          const op = (1 - dist / 120) * 0.12;
+          ctx.strokeStyle = `rgba(249,115,22,${op})`;
+          ctx.lineWidth = 0.5;
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0 || p.x > w) p.vx *= -1;
+      if (p.y < 0 || p.y > h) p.vy *= -1;
+
+      const grd = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 5);
+      grd.addColorStop(0, `rgba(${p.hue},0.7)`);
+      grd.addColorStop(1, `rgba(${p.hue},0)`);
+      ctx.fillStyle = grd;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r * 5, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    animId = requestAnimationFrame(draw);
+  }
+
+  resize();
+  draw();
+  window.addEventListener('resize', resize);
+
+  window._stopParticles = () => {
+    window.removeEventListener('resize', resize);
+    cancelAnimationFrame(animId);
+  };
+})();
+
+renderTabs();
+switchTab('digital');
+</script>
+</body>
+</html>

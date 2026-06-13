@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Zain Media — الجيفاوي{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>الجيفاوي</h1>
+        <p>إدارة المسابقات والجوائز</p>
+    </div>
+    <button class="btn btn-primary" onclick="openModal('addModal')"><i class="fas fa-plus"></i> إضافة مسابقة</button>
+</div>
+
+<div class="card">
+    {% if giveaways %}
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>العنوان</th>
+                    <th>الوصف</th>
+                    <th>قيمة الجائزة</th>
+                    <th>عدد الفائزين</th>
+                    <th>الحالة</th>
+                    <th>تاريخ البداية</th>
+                    <th>تاريخ النهاية</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for g in giveaways %}
+                <tr>
+                    <td style="color:var(--text-muted);">{{ g.id }}</td>
+                    <td>{{ g.title }}</td>
+                    <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;color:var(--text-muted);">{{ g.description }}</td>
+                    <td>{{ g.prize_value or '—' }}</td>
+                    <td>{{ g.winner_count }}</td>
+                    <td>
+                        {% if g.status == 'active' %}
+                        <span class="badge badge-success">نشط</span>
+                        {% elif g.status == 'ended' %}
+                        <span class="badge badge-secondary">منتهي</span>
+                        {% else %}
+                        <span class="badge badge-info">قادم</span>
+                        {% endif %}
+                    </td>
+                    <td style="font-size:13px;color:var(--text-muted);">{{ g.start_date.strftime('%Y-%m-%d') if g.start_date else '—' }}</td>
+                    <td style="font-size:13px;color:var(--text-muted);">{{ g.end_date.strftime('%Y-%m-%d') if g.end_date else '—' }}</td>
+                    <td>
+                        {% if current_user.role == 'admin' %}
+                        <form class="inline" method="POST" action="{{ url_for('admin_delete_giveaway', gid=g.id) }}" onsubmit="return confirm('حذف {{ g.title }}؟')">
+                            <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-gift"></i>
+        <p>لا توجد مسابقات بعد. أضف أول مسابقة!</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Add Modal -->
+<div class="modal" id="addModal">
+    <div class="modal-content">
+        <h2><i class="fas fa-gift"></i> إضافة مسابقة جديدة</h2>
+        <form method="POST">
+            <div class="form-group">
+                <label>عنوان المسابقة *</label>
+                <input type="text" name="title" required placeholder="مثال: مسابقة رمضان 2026">
+            </div>
+            <div class="form-group">
+                <label>وصف المسابقة *</label>
+                <textarea name="description" required placeholder="وصف تفصيلي للمسابقة والجوائز"></textarea>
+            </div>
+            <div class="form-group">
+                <label>رابط الصورة</label>
+                <input type="text" name="image_url" placeholder="/images/giveaway-1.jpg">
+            </div>
+            <div class="form-group">
+                <label>قيمة الجائزة</label>
+                <input type="text" name="prize_value" placeholder="مثال: 5000 ج.م">
+            </div>
+            <div class="form-group">
+                <label>عدد الفائزين</label>
+                <input type="number" name="winner_count" value="1" min="1">
+            </div>
+            <div class="flex gap-2" style="margin-top:20px;">
+                <button type="submit" class="btn btn-primary w-full"><i class="fas fa-save"></i> حفظ</button>
+                <button type="button" class="btn btn-outline w-full" onclick="closeModal('addModal')">إلغاء</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+    function openModal(id) { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    document.getElementById('addModal')?.addEventListener('click', function(e) {
+        if (e.target === this) closeModal('addModal');
+    });
+</script>
+{% endblock %}
+{% endblock %}

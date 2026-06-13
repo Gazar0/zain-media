@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% block title %}Zain Media — لوحة الإحصائيات{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>لوحة الإحصائيات</h1>
+        <p>مرحباً {{ current_user.name }}! إليك ملخص النشاط</p>
+    </div>
+</div>
+
+<div class="card" style="margin-bottom:24px;background:linear-gradient(135deg,rgba(124,58,237,0.08),rgba(245,158,11,0.05));border-color:rgba(124,58,237,0.2)">
+    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:12px">
+        <div style="flex:1">
+            <div style="font-size:13px;color:var(--text-muted);margin-bottom:4px"><i class="fas fa-share-alt"></i> رابط الموقع — شاركه مع أي حد</div>
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                <code id="siteUrlDisplay" style="font-size:18px;font-weight:700;background:linear-gradient(135deg,var(--primary-light),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-family:'Inter',sans-serif">
+                    https://zainmedia.loca.lt
+                </code>
+                <button class="btn btn-sm btn-outline" onclick="navigator.clipboard.writeText('https://zainmedia.loca.lt').then(()=>this.innerHTML='<i class=\'fas fa-check\'></i> تم').catch(()=>{})" style="font-size:11px">
+                    <i class="fas fa-copy"></i> نسخ
+                </button>
+                <a href="https://zainmedia.loca.lt" target="_blank" class="btn btn-sm btn-primary" style="font-size:11px">
+                    <i class="fas fa-external-link-alt"></i> فتح
+                </a>
+            </div>
+        </div>
+        <div style="font-size:12px;color:var(--text-muted)">
+            <span class="badge badge-success"><i class="fas fa-check-circle"></i> شغال</span>
+        </div>
+    </div>
+</div>
+
+<div class="grid-4">
+    <div class="stat-card">
+        <div class="num">{{ quotes_count }}</div>
+        <div class="label">إجمالي طلبات السعر</div>
+    </div>
+    <div class="stat-card">
+        <div class="num">{{ pending_quotes }}</div>
+        <div class="label">طلبات قيد الانتظار</div>
+    </div>
+    <div class="stat-card">
+        <div class="num">{{ employees_count }}</div>
+        <div class="label">الموظفين</div>
+    </div>
+    <div class="stat-card">
+        <div class="num">{{ giveaways_count }}</div>
+        <div class="label">مسابقات نشطة</div>
+    </div>
+    <div class="stat-card">
+        <div class="num">{{ customers_count }}</div>
+        <div class="label">العملاء</div>
+    </div>
+    <div class="stat-card">
+        <div class="num">{{ invoices_count }}</div>
+        <div class="label">الفواتير</div>
+    </div>
+    <div class="stat-card">
+        <div class="num">{{ pending_requests }}</div>
+        <div class="label">طلب موظف</div>
+    </div>
+    <div class="stat-card" style="cursor:pointer" onclick="window.location.href='{{ url_for('admin_visitors') }}'">
+        <div class="num">{{ visitors_today }}</div>
+        <div class="label">زوار اليوم</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:2px">إجمالي {{ visitors_count }}</div>
+    </div>
+</div>
+
+<div class="grid-2" style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+
+<div class="card">
+    <h2 style="font-size:18px;margin-bottom:16px;">آخر طلبات السعر</h2>
+    {% if recent_quotes %}
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>العميل</th>
+                    <th>الخدمة</th>
+                    <th>الهاتف</th>
+                    <th>الحالة</th>
+                    <th>التاريخ</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for q in recent_quotes %}
+                <tr>
+                    <td>{{ q.client_name }}</td>
+                    <td>{{ q.service }}</td>
+                    <td dir="ltr">{{ q.client_phone }}</td>
+                    <td><span class="badge badge-{{ q.status_color }}">{{ q.status_label }}</span></td>
+                    <td style="font-size:13px;color:var(--text-muted);">{{ q.created_at.strftime('%Y-%m-%d %H:%M') if q.created_at else '—' }}</td>
+                    <td><a href="{{ url_for('admin_quotes') }}" class="btn btn-sm btn-outline">عرض</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-inbox"></i>
+        <p>لا توجد طلبات حتى الآن</p>
+    </div>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h2 style="font-size:18px;margin-bottom:16px;">
+        <i class="fas fa-eye"></i> آخر الزوار
+        <a href="{{ url_for('admin_visitors') }}" class="btn btn-sm btn-outline" style="float:left">عرض الكل</a>
+    </h2>
+    {% if recent_visitors %}
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>IP</th>
+                    <th>المتصفح</th>
+                    <th>نظام التشغيل</th>
+                    <th>الجهاز</th>
+                    <th>الدولة</th>
+                    <th>المدينة</th>
+                    <th>الوقت</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for v in recent_visitors %}
+                <tr>
+                    <td style="direction:ltr;font-family:'Inter',sans-serif;font-size:12px">{{ v.ip }}</td>
+                    <td>{{ v.browser or '—' }}</td>
+                    <td>{{ v.os or '—' }}</td>
+                    <td>{{ v.device or '—' }}</td>
+                    <td>{{ v.country or '—' }}</td>
+                    <td>{{ v.city or '—' }}</td>
+                    <td style="font-size:12px;color:var(--text-muted);">{{ v.visited_at.strftime('%Y-%m-%d %H:%M') if v.visited_at else '—' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-eye-slash"></i>
+        <p>لا زوار حتى الآن</p>
+    </div>
+    {% endif %}
+</div>
+
+</div>
+{% endblock %}

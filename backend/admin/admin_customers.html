@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% block title %}Zain Media — إدارة العملاء{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>إدارة العملاء</h1>
+        <p>إدارة قاعدة بيانات العملاء</p>
+    </div>
+    {% if current_user.role == 'admin' %}
+    <button class="btn btn-primary" onclick="openModal('addModal')"><i class="fas fa-plus"></i> إضافة عميل</button>
+    {% endif %}
+</div>
+
+<div class="card" style="margin-bottom:20px">
+    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+        <button class="btn btn-sm btn-outline active-search-tab" data-target="searchName" onclick="switchSearchTab('searchName',this)"><i class="fas fa-search"></i> بحث بالاسم / الموبايل</button>
+        <button class="btn btn-sm btn-outline" data-target="searchCode" onclick="switchSearchTab('searchCode',this)"><i class="fas fa-barcode"></i> بحث بالكود</button>
+    </div>
+    <div id="searchName" style="display:flex;gap:8px">
+        <input type="text" id="searchNameInput" placeholder="ابحث باسم العميل أو رقم الموبايل..." style="flex:1;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:inherit" onkeyup="filterCustomers()">
+        <button class="btn btn-primary" onclick="filterCustomers()"><i class="fas fa-search"></i></button>
+    </div>
+    <div id="searchCode" style="display:none;gap:8px">
+        <input type="text" id="searchCodeInput" placeholder="ابحث بكود العميل..." style="flex:1;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:inherit" onkeyup="filterCustomers()">
+        <button class="btn btn-primary" onclick="filterCustomers()"><i class="fas fa-search"></i></button>
+    </div>
+</div>
+
+<div class="card">
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>الكود</th>
+                    <th>الاسم</th>
+                    <th>الهاتف</th>
+                    <th>النوع</th>
+                    <th>المصدر</th>
+                    <th>أضيف بواسطة</th>
+                    <th>تاريخ الإضافة</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody id="custTableBody">
+                {% for c in customers %}
+                <tr>
+                    <td style="font-family:'Inter',sans-serif;font-weight:700;color:var(--primary-light)">{{ c.code or '—' }}</td>
+                    <td>{{ c.name }}</td>
+                    <td dir="ltr" style="font-size:13px">{{ c.phone or '—' }}</td>
+                    <td>{% if c.customer_type == 'company' %}<span class="badge badge-info">🏢 شركة</span>{% else %}<span class="badge badge-success">👤 فرد</span>{% endif %}</td>
+                    <td style="font-size:12px;color:var(--text-muted)">{{ c.source or '—' }}</td>
+                    <td style="font-size:13px;color:var(--text-muted)">{{ c.created_by.name if c.created_by else '—' }}</td>
+                    <td style="font-size:12px;color:var(--text-muted);font-family:'Inter',sans-serif">{{ c.created_at.strftime('%Y-%m-%d %H:%M') if c.created_at else '—' }}</td>
+                    <td>
+                        {% if current_user.role == 'admin' %}
+                        <form class="inline" method="POST" action="{{ url_for('admin_customers_delete', cid=c.id) }}" onsubmit="return confirm('متأكد من حذف {{ c.name }}؟')">
+                            <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Add Modal -->
+<div class="modal" id="addModal">
+    <div class="modal-content">
+        <h2><i class="fas fa-user-plus"></i> إضافة عميل جديد</h2>
+        <form method="POST" action="{{ url_for('admin_customers') }}">
+            <div class="form-group">
+                <label>الاسم *</label>
+                <input type="text" name="name" required placeholder="اسم العميل">
+            </div>
+            <div class="form-group">
+                <label>رقم الهاتف</label>
+                <input type="text" name="phone" placeholder="201002711494" dir="ltr">
+            </div>
+            <div class="form-group">
+                <label>البريد الإلكتروني</label>
+                <input type="email" name="email" placeholder="email@example.com">
+            </div>
+            <div class="form-group">
+                <label>نوع العميل</label>
+                <select name="customer_type">
+                    <option value="individual">👤 فرد</option>
+                    <option value="company">🏢 شركة</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>كيف تعرفت علينا؟</label>
+                <select name="source">
+                    <option value="">— اختر —</option>
+                    <option value="فيسبوك">فيسبوك</option>
+                    <option value="إنستجرام">إنستجرام</option>
+                    <option value="تيك توك">تيك توك</option>
+                    <option value="جوجل">جوجل</option>
+                    <option value="توصية من صديق">توصية من صديق</option>
+                    <option value="إعلان">إعلان</option>
+                    <option value="واتساب">واتساب</option>
+                    <option value="آخر">آخر</option>
+                </select>
+            </div>
+            <div class="flex gap-2" style="margin-top: 20px;">
+                <button type="submit" class="btn btn-primary w-full"><i class="fas fa-save"></i> حفظ</button>
+                <button type="button" class="btn btn-outline w-full" onclick="closeModal('addModal')">إلغاء</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let allCustomers = {{ customers|tojson|safe }};
+
+    function openModal(id) { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    document.getElementById('addModal')?.addEventListener('click', function(e) {
+        if (e.target === this) closeModal('addModal');
+    });
+
+    function switchSearchTab(id, btn) {
+        document.getElementById('searchName').style.display = 'none';
+        document.getElementById('searchCode').style.display = 'none';
+        document.getElementById(id).style.display = 'flex';
+        document.querySelectorAll('.active-search-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        filterCustomers();
+    }
+
+    function filterCustomers() {
+        const isCode = document.getElementById('searchCode').style.display === 'flex';
+        const q = isCode
+            ? document.getElementById('searchCodeInput').value.trim().toLowerCase()
+            : document.getElementById('searchNameInput').value.trim().toLowerCase();
+        const tbody = document.getElementById('custTableBody');
+        if (!q) {
+            tbody.querySelectorAll('tr').forEach(tr => tr.style.display = '');
+            return;
+        }
+        tbody.querySelectorAll('tr').forEach(tr => {
+            const code = tr.cells[0]?.textContent.toLowerCase() || '';
+            const name = tr.cells[1]?.textContent.toLowerCase() || '';
+            const phone = tr.cells[2]?.textContent.toLowerCase() || '';
+            const match = isCode ? code.includes(q) : name.includes(q) || phone.includes(q);
+            tr.style.display = match ? '' : 'none';
+        });
+    }
+</script>
+{% endblock %}
