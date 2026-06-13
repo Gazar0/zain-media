@@ -114,7 +114,7 @@
 
 {% block scripts %}
 <script>
-    let allCustomers = {{ customers|tojson|safe }};
+    let allCustomers = {{ customers_json|tojson|safe }};
 
     function openModal(id) { document.getElementById(id).classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }

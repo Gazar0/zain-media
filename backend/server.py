@@ -847,7 +847,8 @@ def admin_customers():
         flash(f"تم إضافة العميل {name} بكود {next_code}", "success")
         return redirect(url_for("admin_customers"))
     customers = Customer.query.order_by(Customer.created_at.desc()).all()
-    return render_template("admin_customers.html", customers=customers)
+    customers_json = [c.to_dict() for c in customers]
+    return render_template("admin_customers.html", customers=customers, customers_json=customers_json)
 
 
 @app.route("/admin/customers/<int:cid>/delete", methods=["POST"])

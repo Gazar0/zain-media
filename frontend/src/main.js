@@ -556,12 +556,19 @@ setTimeout(()=>loader.classList.add('hidden'),3000)
 // ─── Text Reveal ───
 function initTextReveal(){
   document.querySelectorAll('.section-title').forEach(title=>{
-    const text=title.textContent;const html=title.innerHTML;
-    const words=html.split(/(\s+)/);
-    title.innerHTML=words.map((w,i)=>{
-      if(w.trim()==='')return w;
-      const isHighlight=w.includes('highlight')||w.includes('span');
-      return `<span class="text-reveal"><span class="text-reveal-inner text-reveal-delay-${i%6}">${w}</span></span>`
+    const fragments=[];
+    Array.from(title.childNodes).forEach(node=>{
+      if(node.nodeType===Node.TEXT_NODE){
+        node.textContent.split(/(\s+)/).forEach(p=>fragments.push({text:p,type:'text'}))
+      }else if(node.nodeType===Node.ELEMENT_NODE){
+        fragments.push({text:node.outerHTML,type:'element'})
+      }
+    });
+    let wordIdx=0;
+    title.innerHTML=fragments.map(f=>{
+      if(f.type==='element')return f.text;
+      if(f.text.trim()==='')return f.text;
+      return `<span class="text-reveal"><span class="text-reveal-inner text-reveal-delay-${wordIdx++%6}">${f.text}</span></span>`
     }).join('');
   });
   const textObserver=new IntersectionObserver(entries=>{

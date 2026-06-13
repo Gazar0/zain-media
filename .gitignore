@@ -7,6 +7,5 @@ __pycache__/
 .DS_Store
 frontend/node_modules/
 frontend/dist/
-static/api/admin_url.js
 start_admin.sh
 /tmp/*.log
