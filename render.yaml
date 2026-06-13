@@ -4,13 +4,9 @@ services:
     runtime: python
     region: singapore
     buildCommand: pip install -r backend/requirements.txt
-    startCommand: cd backend && gunicorn server:app
+    startCommand: cd backend && gunicorn server:app --log-level debug
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.14.0
       - key: SMTP_EMAIL
         value: memogazar049@gmail.com
-      - key: SMTP_PASSWORD
-        sync: false
       - key: SECRET_KEY
         generateValue: true
